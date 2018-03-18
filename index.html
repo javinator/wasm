@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Wasm Player</title>
+<meta charset="UTF-8"> 
+</head>
+<body align="center">
+The result of the loaded Webassembly function is:<br>
+<p id="result"></p>
+<script>
+var importObject = {
+  imports: { imported_func: arg => console.log(arg) }
+};
+
+fetch('index.wasm').then(response =>
+  response.arrayBuffer()
+).then(bytes =>
+  WebAssembly.instantiate(bytes, importObject)
+).then(obj => {
+  // Call an exported function:
+  document.getElementById("result").innerHTML = obj.instance.exports.exec();
+})
+</script>
+</body>
+</html>

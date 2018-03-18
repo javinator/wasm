@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JS Parser</title>
+<meta charset="UTF-8">
+<script src="parser.js"></script> 
+</head>
+<body>
+<script>
+function write(input) {
+    var textToWrite = input;
+    var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+    var fileNameToSaveAs = "run.wat";
+      var downloadLink = document.createElement("a");
+    downloadLink.download = fileNameToSaveAs;
+    downloadLink.innerHTML = "Download File";
+    if (window.webkitURL != null)
+    {
+        // Chrome allows the link to be clicked
+        // without actually adding it to the DOM.
+        downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+    }
+    else
+    {
+        // Firefox requires the link to be added to the DOM
+        // before it can be clicked.
+        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+    }
+    
+    console.log(input);
+    console.log("The above has been written to file 'run.wat'");
+
+    downloadLink.click();
+}
+</script>
+</body>
+</html>
