@@ -1,0 +1,30 @@
+// Simple Arithmetics Grammar
+// ==========================
+//
+// Accepts expressions like "2 * (3 + 4) / 3" and computes their value.
+
+Expression
+  = head:Term tail:(_ ("+" / "-") _ Term)* {
+      return tail.reduce(function(result, element) {
+        if (element[1] === "+") { return "f64.add (".concat(result,")(",element[3],")"); }
+        if (element[1] === "-") { return "f64.sub (".concat(result,")(",element[3],")"); }
+      }, head);
+    }
+
+Term
+  = head:Factor tail:(_ ("*" / "/") _ Factor)* {
+      return tail.reduce(function(result, element) {
+        if (element[1] === "*") { return "f64.mul (".concat(result,")(",element[3],")"); }
+        if (element[1] === "/") { return "f64.div (".concat(result,")(",element[3],")"); }
+      }, head);
+    }
+
+Factor
+  = "(" _ expr:Expression _ ")" { return expr; }
+  / Integer
+
+Integer "integer"
+  = _ [0-9]+ { return "f64.const ".concat(text()); }
+
+_ "whitespace"
+  = [ \t\n\r]*
