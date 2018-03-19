@@ -687,8 +687,8 @@ function write(input) {
         document.body.appendChild(downloadLink);
     }
     
-    console.log(input);
-    console.log("The above has been written to file 'run.wat'");
+    console.log(textToWrite);
+    console.log("The above has been written to file 'index.wat'");
 
     downloadLink.click();
 }
