@@ -668,7 +668,7 @@ window.Parser =
 function write(input) {
     var textToWrite = "(module\n\t(func $exec (result f64)\n\t\t(".concat(Parser.parse(input)).concat(")\n\t)\n\t(export \"exec\" (func $exec))\n)");
     var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
-    var fileNameToSaveAs = "run.wat";
+    var fileNameToSaveAs = "index.wat";
       var downloadLink = document.createElement("a");
     downloadLink.download = fileNameToSaveAs;
     downloadLink.innerHTML = "Download File";
