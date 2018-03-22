@@ -31,3 +31,5 @@ WebAssembly is a relatively new assembly language that aims at providing near-na
 ### Notices
 
 Addition and subtraction was implemented with integers. Division had to be implemented with floats. Module description and function export of .wat file had to be done in the write/export function.
+
+Separating the parser in mathematical function which are evaluated and other stuff like setting variables is trickier than anticipated (with a lack of compiler knowledge)

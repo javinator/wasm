@@ -1,0 +1,37 @@
+Expression
+  = (MathExpression / Other) *
+  
+Other
+  = Sign / Character
+
+MathExpression
+  = head:Term tail:(_ ("+" / "-") _ Term)* {
+      return tail.reduce(function(result, element) {
+        if (element[1] === "+") { return result + element[3]; }
+        if (element[1] === "-") { return result - element[3]; }
+      }, head);
+    }
+
+Term
+  = head:Factor tail:(_ ("*" / "/") _ Factor)* {
+      return tail.reduce(function(result, element) {
+        if (element[1] === "*") { return result * element[3]; }
+        if (element[1] === "/") { return result / element[3]; }
+      }, head);
+    }
+
+Factor
+  = "(" _ expr:MathExpression _ ")" { return expr; }
+  / Integer
+
+Integer "integer"
+  = _ [0-9]+ { return parseInt(text(), 10); }
+  
+Sign "sign"
+  = [=+*/-]+ {return text();}
+  
+Character "character"
+  = _[^0-9=+*/-]+ { return text()}
+
+_ "whitespace"
+  = [ \t\n\r]*            
