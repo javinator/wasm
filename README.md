@@ -33,3 +33,16 @@ WebAssembly is a relatively new assembly language that aims at providing near-na
 Addition and subtraction was implemented with integers. Division had to be implemented with floats. Module description and function export of .wat file had to be done in the write/export function.
 
 Separating the parser in mathematical function which are evaluated and other stuff like setting variables is trickier than anticipated (with a lack of compiler knowledge)
+
+
+### Resources
+
+https://pegjs.org/online
+
+https://developer.mozilla.org/en-US/docs/WebAssembly/Understanding_the_text_format
+
+http://webassembly.github.io/spec/core/index.html
+
+https://cdn.rawgit.com/WebAssembly/wabt/fb986fbd/demo/wat2wasm/
+
+https://mbebenita.github.io/WasmExplorer/
