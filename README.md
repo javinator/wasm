@@ -46,3 +46,5 @@ http://webassembly.github.io/spec/core/index.html
 https://cdn.rawgit.com/WebAssembly/wabt/fb986fbd/demo/wat2wasm/
 
 https://mbebenita.github.io/WasmExplorer/
+
+http://ast.run/
