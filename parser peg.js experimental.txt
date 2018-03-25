@@ -40,4 +40,7 @@ Character "character"
   = _[^0-9=+*/-]+ { return text().replace(" ","")}
 
 _ "whitespace"
-  = [ \t\n\r]*            
+  = [ \t]*
+
+Break "break"
+  = [\r\n]            
