@@ -13,7 +13,7 @@ The rest of the project just runs in your browser.
 To use this project, simply open the 'parser.html' file in your browser. Open the javascript console and use the function 'write()', for example:
 
 ```
-write("(3+2*(1+2)/4)*3")
+write("(3+2*(1+2)/4)*3;")
 ```
 
 This will open a download prompt for a 'index.wat' file. After this step you need to translate the text format to a binary format with 'wat2wasm'. Open your terminal and type:

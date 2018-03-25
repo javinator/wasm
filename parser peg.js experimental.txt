@@ -1,14 +1,14 @@
 Expression
-  = ((Define/Assign/MathExpression) Break)*
+  = exp:((Define/Assign/MathExpression) Break)* {return exp.join("\n").replace(/,/g,"");}
 
 Define
-  = "var" char:Character{return "(local $".concat(char).concat(")"); }
+  = "var" char:Character{return "(local $".concat(char).concat(" f64)"); }
 
 Assign
-  = va:SetVariable equ:Equal math:MathExpression {return va.concat(" (").concat(math).concat(")");}
+  = va:SetVariable equ:Equal math:MathExpression {return va.concat(" (").concat(math).concat("))");}
 
 SetVariable
-  = char:Character { return "set_local $".concat(char);}
+  = char:Character { return "(set_local $".concat(char);}
 
 MathExpression
   = head:Term tail:(_ ("+" / "-") _ Term)*{
@@ -43,7 +43,7 @@ Character "character"
   = _[a-zA-Z]+ { return text().replace(" ","")}
 
 Break "break"
-  = [;]_
+  = [;]_ {return "";}
 
 _ "whitespace"
   = [ \t\r\n]*

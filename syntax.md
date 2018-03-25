@@ -20,10 +20,10 @@ We will need to assign some values to variables. All variables will be defined a
 
 ```
 Input:
-var x
-x = 2
-x + 1
+var x;
+x = 3;
+x + 2;
 
 Output:
-3
+5
 ```
