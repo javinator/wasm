@@ -1,22 +1,28 @@
 Expression
-  = (MathExpression / Other) *
-  
+  = (MathExpression / Other) * 
+
 Other
-  = Sign / Character
+  = va:Variable math:MathExpression {return va.concat(" (").concat(math).concat(")");}
+
+Variable
+  = char:Character sign:Sign  {
+  		if (sign === "=") { return "set_local $".concat(char);}
+        else { return "add/sub/mult/div";}
+    }
 
 MathExpression
   = head:Term tail:(_ ("+" / "-") _ Term)* {
       return tail.reduce(function(result, element) {
-        if (element[1] === "+") { return result + element[3]; }
-        if (element[1] === "-") { return result - element[3]; }
+        if (element[1] === "+") { return "f64.add (".concat(result,")(",element[3],")"); }
+        if (element[1] === "-") { return "f64.sub (".concat(result,")(",element[3],")"); }
       }, head);
     }
 
 Term
   = head:Factor tail:(_ ("*" / "/") _ Factor)* {
       return tail.reduce(function(result, element) {
-        if (element[1] === "*") { return result * element[3]; }
-        if (element[1] === "/") { return result / element[3]; }
+        if (element[1] === "*") { return "f64.mul (".concat(result,")(",element[3],")"); }
+        if (element[1] === "/") { return "f64.div (".concat(result,")(",element[3],")"); }
       }, head);
     }
 
@@ -25,13 +31,13 @@ Factor
   / Integer
 
 Integer "integer"
-  = _ [0-9]+ { return parseInt(text(), 10); }
+  = _ [0-9]+ { return "f64.const ".concat(text()); }
   
 Sign "sign"
-  = [=+*/-]+ {return text();}
+  = _ [=+*/-] {return text();}
   
 Character "character"
-  = _[^0-9=+*/-]+ { return text()}
+  = _[^0-9=+*/-]+ { return text().replace(" ","")}
 
 _ "whitespace"
   = [ \t\n\r]*            
