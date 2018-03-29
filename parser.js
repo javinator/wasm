@@ -146,16 +146,16 @@ window.Parser =
         peg$c1 = "var",
         peg$c2 = peg$literalExpectation("var", false),
         peg$c3 = function(char) {return "(local $".concat(char).concat(" f64)"); },
-        peg$c4 = function(va, equ, math) {return va.concat(" (").concat(math).concat("))");},
-        peg$c5 = function(char) { return "(set_local $".concat(char);},
+        peg$c4 = function(va, equ, math) {return va.concat(math).concat(")");},
+        peg$c5 = function(char) { return "(set_local $".concat(char," ");},
         peg$c6 = "+",
         peg$c7 = peg$literalExpectation("+", false),
         peg$c8 = "-",
         peg$c9 = peg$literalExpectation("-", false),
         peg$c10 = function(head, tail) {
               return tail.reduce(function(result, element) {
-                if (element[1] === "+") { return "f64.add (".concat(result,")(",element[3],")"); }
-                if (element[1] === "-") { return "f64.sub (".concat(result,")(",element[3],")"); }
+                if (element[1] === "+") { return "(f64.add ".concat(result,element[3],")"); }
+                if (element[1] === "-") { return "(f64.sub ".concat(result,element[3],")"); }
               }, head);
             },
         peg$c11 = "*",
@@ -164,8 +164,8 @@ window.Parser =
         peg$c14 = peg$literalExpectation("/", false),
         peg$c15 = function(head, tail) {
               return tail.reduce(function(result, element) {
-                if (element[1] === "*") { return "f64.mul (".concat(result,")(",element[3],")"); }
-                if (element[1] === "/") { return "f64.div (".concat(result,")(",element[3],")"); }
+                if (element[1] === "*") { return "(f64.mul ".concat(result,element[3],")"); }
+                if (element[1] === "/") { return "(f64.div ".concat(result,element[3],")"); }
               }, head);
             },
         peg$c16 = "(",
@@ -176,8 +176,8 @@ window.Parser =
         peg$c21 = peg$otherExpectation("integer"),
         peg$c22 = /^[0-9]/,
         peg$c23 = peg$classExpectation([["0", "9"]], false, false),
-        peg$c24 = function() { return "f64.const ".concat(text()); },
-        peg$c25 = function(char) { return "get_local $".concat(char);},
+        peg$c24 = function() { return "(f64.const ".concat(text(),")"); },
+        peg$c25 = function(char) { return "(get_local $".concat(char,")");},
         peg$c26 = peg$otherExpectation("equal"),
         peg$c27 = /^[=]/,
         peg$c28 = peg$classExpectation(["="], false, false),
@@ -859,7 +859,6 @@ window.Parser =
             s2.push(s3);
             if (peg$c31.test(input.charAt(peg$currPos))) {
               s3 = input.charAt(peg$currPos);
-
               peg$currPos++;
             } else {
               s3 = peg$FAILED;
@@ -982,7 +981,7 @@ window.Parser =
 })();
 
 function write(input) {
-    var textToWrite = "(module\n\t(func $exec (result f64)\n\t\t".concat(Parser.parse(input)).concat(")\n\t)\n\t(export \"exec\" (func $exec))\n)");
+    var textToWrite = "(module\n\t(func $main (result f64)\n\t\t".concat(Parser.parse(input)).concat("\n\t)\n\t(export \"main\" (func $main))\n)");
     var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
     var fileNameToSaveAs = "index.wat";
       var downloadLink = document.createElement("a");

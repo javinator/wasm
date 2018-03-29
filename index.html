@@ -18,7 +18,7 @@ fetch('index.wasm').then(response =>
   WebAssembly.instantiate(bytes, importObject)
 ).then(obj => {
   // Call an exported function:
-  document.getElementById("result").innerHTML = obj.instance.exports.exec();
+  document.getElementById("result").innerHTML = obj.instance.exports.main();
 })
 </script>
 </body>
