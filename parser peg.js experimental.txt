@@ -5,24 +5,24 @@ Define
   = "var" char:Character{return "(local $".concat(char).concat(" f64)"); }
 
 Assign
-  = va:SetVariable equ:Equal math:MathExpression {return va.concat(" (").concat(math).concat("))");}
+  = va:SetVariable equ:Equal _ math:MathExpression {return va.concat(math).concat(")");}
 
 SetVariable
-  = char:Character { return "(set_local $".concat(char);}
+  = char:Character { return "(set_local $".concat(char," ");}
 
 MathExpression
   = head:Term tail:(_ ("+" / "-") _ Term)*{
       return tail.reduce(function(result, element) {
-        if (element[1] === "+") { return "f64.add (".concat(result,")(",element[3],")"); }
-        if (element[1] === "-") { return "f64.sub (".concat(result,")(",element[3],")"); }
+        if (element[1] === "+") { return "(f64.add ".concat(result,element[3],")"); }
+        if (element[1] === "-") { return "(f64.sub ".concat(result,element[3],")"); }
       }, head);
     }
 
 Term
   = head:Factor tail:(_ ("*" / "/") _ Factor)* {
       return tail.reduce(function(result, element) {
-        if (element[1] === "*") { return "f64.mul (".concat(result,")(",element[3],")"); }
-        if (element[1] === "/") { return "f64.div (".concat(result,")(",element[3],")"); }
+        if (element[1] === "*") { return "(f64.mul ".concat(result,element[3],")"); }
+        if (element[1] === "/") { return "(f64.div ".concat(result,element[3],")"); }
       }, head);
     }
 
@@ -31,10 +31,10 @@ Factor
   / Integer / GetVariable
 
 Integer "integer"
-  = _ [0-9]+ { return "f64.const ".concat(text()); }
+  = _ [0-9]+ { return "(f64.const ".concat(text(),")"); }
   
 GetVariable
-  = char:Character { return "get_local $".concat(char);}
+  = char:Character { return "(get_local $".concat(char,")");}
   
 Equal "equal"
   = _ [=] {return "=";}
