@@ -27,3 +27,20 @@ x + 2;
 Output:
 5
 ```
+
+### Iteration 3
+
+The next step will be functions that need to be declared, e.b.
+
+```
+Input:
+def add(x)(y){
+x+y;
+};
+def main{
+call add(3)(2);
+};
+
+Output:
+5
+```

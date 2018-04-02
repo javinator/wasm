@@ -1,5 +1,17 @@
+Functions
+  = main:DefineMain func:DefineFunction* {return main.concat(func).replace(/,/g,"");}
+
+DefineMain
+  = "def main" "{" exp:Expression "}" Break {return "(func $main (result f64)\n".concat(exp,"\n)\n");}
+
+DefineFunction
+  = "def" name:Character "{" exp:Expression "}" Break {return "(func $".concat(name," (result f64)\n",exp,"\n)\n");}
+
 Expression
-  = exp:((Define/Assign/MathExpression) Break)* {return exp.join("\n").replace(/,/g,"");}
+  = exp:((Define/Assign/CallFunction/MathExpression) Break)+ {return exp.join("\n").replace(/,/g,"");}
+  
+CallFunction
+  = "call" char:Character {return "(call $".concat(char,")");}
 
 Define
   = "var" char:Character{return "(local $".concat(char).concat(" f64)"); }
@@ -47,3 +59,5 @@ Break "break"
 
 _ "whitespace"
   = [ \t\r\n]*
+
+              
