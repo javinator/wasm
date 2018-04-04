@@ -30,15 +30,15 @@ Output:
 
 ### Iteration 3
 
-The next step will be functions that need to be declared, e.b.
+The next step will be functions that need to be declared. The main function is the one which will be exported and called from outside. It has to be declared first, e.g.
 
 ```
 Input:
-def add(x)(y){
-x+y;
-};
 def main{
 call add(3)(2);
+};
+def add(x)(y){
+x+y;
 };
 
 Output:
