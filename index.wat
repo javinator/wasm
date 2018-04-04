@@ -1,10 +1,10 @@
 (module
 (func $main (result f64)
-(call $foo)
+(call $foo (f64.const 2))
 )
-(func $foo (result f64)
+(func $foo (param $a f64)  (result f64)
 (local $x f64)
-(set_local $x (f64.add (f64.const 3)(f64.mul (f64.const 2)(f64.const 3))))
+(set_local $x (f64.add (get_local $a)(f64.mul (f64.const 2)(f64.const 3))))
 (f64.add (f64.mul (f64.const 2)(get_local $x))(f64.const 3))
 )
 (export "main" (func $main))
