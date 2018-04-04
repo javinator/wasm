@@ -23,7 +23,7 @@ Define
   = "var" char:Character{return "(local $".concat(char).concat(" f64)"); }
 
 Assign
-  = va:SetVariable equ:Equal _ math:MathExpression {return va.concat(math).concat(")");}
+  = va:SetVariable _ "=" _ exp:MathExpression {return va.concat(exp).concat(")");}
 
 SetVariable
   = char:Character { return "(set_local $".concat(char," ");}
@@ -46,16 +46,13 @@ Term
 
 Factor
   = "(" _ expr:MathExpression _ ")" { return expr; }
-  / Integer / GetVariable
+  / CallFunction / Integer / GetVariable
 
 Integer "integer"
   = _ [0-9]+ { return "(f64.const ".concat(text(),")"); }
   
 GetVariable
   = char:Character { return "(get_local $".concat(char,")");}
-  
-Equal "equal"
-  = _ [=] {return "=";}
   
 Character "character"
   = _[a-zA-Z]+ { return text().replace(" ","")}
