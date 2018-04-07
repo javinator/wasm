@@ -10,7 +10,7 @@ The rest of the project just runs in your browser.
 
 ### Syntax and pipeline
 
-To use this project, simply open the 'parser.html' file in your browser. Open the javascript console and use the function 'write()', for example:
+To use this project, simply open the 'index.html' file in your browser. Open the javascript console and use the function 'write()', for example:
 
 ```
 write("def main {(1+2)*3+4;};")
@@ -22,7 +22,7 @@ This will open a download prompt for a 'index.wat' file. After this step you nee
 wat2wasm index.wat -o index.wasm
 ```
 
-After that, you can open the 'index.html' and the result should be displayed.
+After that, you can reload the 'index.html' and the result should be displayed.
 
 For the syntax see [Syntax](syntax.md)
 
@@ -46,6 +46,8 @@ https://pegjs.org/online
 https://developer.mozilla.org/en-US/docs/WebAssembly/Understanding_the_text_format
 
 http://webassembly.github.io/spec/core/index.html
+
+https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md
 
 https://cdn.rawgit.com/WebAssembly/wabt/fb986fbd/demo/wat2wasm/
 
