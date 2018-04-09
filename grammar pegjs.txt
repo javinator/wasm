@@ -11,7 +11,7 @@ Expression
   = _ exp:((Bool/Define/Assign/CallFunction/MathExpression) Break)+ _ {return exp.join("\n").replace(/,/g,"");}
   
 Bool 
-  = head:MathExpression _ op:("=="/"!="/"<"/"<="/">"/">=") _ tail:MathExpression{
+  = head:MathExpression _ op:("=="/"!="/"<="/"<"/">="/">") _ tail:MathExpression{
     if (op === "==") { return "(f64.convert_s/i32 (f64.eq ".concat(head,tail,"))");}
     if (op === "!=") { return "(f64.convert_s/i32 (f64.ne ".concat(head,tail,"))");}
     if (op === "<") { return "(f64.convert_s/i32 (f64.lt ".concat(head,tail,"))");}
