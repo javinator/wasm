@@ -44,3 +44,13 @@ x+y;
 Output:
 5
 ```
+
+### Iteration 4
+
+Control Instructions like *if* or *while* are added. For ifs and whiles to work, there also need to be compare instructions.
+
+* *a == b* : returns 1 if a = b, 0 otherwise
+* *a >= b* : returns 1 if a >= b, 0 otherwise
+* *a <= b* : returns 1 if a <= b, 0 otherwise
+* *a > b* : returns 1 if a > b, 0 otherwise
+* *a < b* : returns 1 if a < b, 0 otherwise

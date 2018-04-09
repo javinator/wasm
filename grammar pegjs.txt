@@ -8,11 +8,19 @@ DefineFunction
   = "def" name:Character para:( _ "(" Parameter ")" _ )* _ "{" exp:Expression "}" Break {return "(func $".concat(name,para," (result f64)\n",exp,"\n)\n");}
 
 Expression
-  = _ exp:((Define/Assign/CallFunction/MathExpression) Break)+ _ {return exp.join("\n").replace(/,/g,"");}
-
-Parameter
-  = char:Character {return "param $".concat(char, " f64");}
+  = _ exp:((Bool/Define/Assign/CallFunction/MathExpression) Break)+ _ {return exp.join("\n").replace(/,/g,"");}
   
+Bool 
+  = head:MathExpression _ op:("=="/"!="/"<"/"<="/">"/">=") _ tail:MathExpression{
+    if (op === "==") { return "(f64.convert_s/i32 (f64.eq ".concat(head,tail,"))");}
+    if (op === "!=") { return "(f64.convert_s/i32 (f64.ne ".concat(head,tail,"))");}
+    if (op === "<") { return "(f64.convert_s/i32 (f64.lt ".concat(head,tail,"))");}
+    if (op === "<=") { return "(f64.convert_s/i32 (f64.le ".concat(head,tail,"))");}
+    if (op === ">") { return "(f64.convert_s/i32 (f64.gt ".concat(head,tail,"))");}
+    if (op === ">=") { return "(f64.convert_s/i32 (f64.ge ".concat(head,tail,"))");}
+    }
+  
+
 CallFunction
   = "call" char:Character para:( _ "(" CallParameter ")" _ )* {return "(call $".concat(char,para,")");}
 
@@ -43,6 +51,9 @@ Term
         if (element[1] === "/") { return "(f64.div ".concat(result,element[3],")"); }
       }, head);
     }
+    
+Parameter
+  = char:Character {return "param $".concat(char, " f64");}
 
 Factor
   = "(" _ expr:MathExpression _ ")" { return expr; }

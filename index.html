@@ -4,6 +4,35 @@
 <title>JS Parser and Wasm Player</title>
 <meta charset="UTF-8">
 <script src="parser.js"></script> 
+<script>
+function write(input) {
+    var textToWrite = "(module\n".concat(Parser.parse(input)).concat("(export \"main\" (func $main))\n)");
+    var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+    var fileNameToSaveAs = "index.wat";
+      var downloadLink = document.createElement("a");
+    downloadLink.download = fileNameToSaveAs;
+    downloadLink.innerHTML = "Download File";
+    if (window.webkitURL != null)
+    {
+        // Chrome allows the link to be clicked
+        // without actually adding it to the DOM.
+        downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+    }
+    else
+    {
+        // Firefox requires the link to be added to the DOM
+        // before it can be clicked.
+        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+    }
+    
+    console.log(textToWrite);
+    console.log("The above has been written to file 'index.wat'");
+
+    downloadLink.click();
+}
+</script>
 </head>
 <body align="center">
 The result of the loaded Webassembly function is:<br>

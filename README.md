@@ -38,6 +38,8 @@ Separating the parser in mathematical function which are evaluated and other stu
 
 As parameters don't have a fixed number it could be tricky. But as expressions in pegjs are returned as arrays, it can be achieved quite easily.
 
+Everything is done with f64 as of now, but compare operators (like *less than*) return an integer, so they need to be converted to floats.
+
 
 ### Resources
 
