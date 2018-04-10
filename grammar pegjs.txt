@@ -13,8 +13,7 @@ Expression
 If
   = "if (" bool:Bool ") {" exp:Expression "}" _ "else {" elseexp:Expression "}" {
   return "(if ".concat(bool,"\n(then (set_local 0 ",exp,"))\n")
-  .concat("(else (set_local 0 ",elseexp,")))\n(get_local 0)");
-  ;}
+  .concat("(else (set_local 0 ",elseexp,")))\n(get_local 0)");}
 
 While
   = "while (" bool:Bool ") {" exp:Expression "}" {return exp;}
