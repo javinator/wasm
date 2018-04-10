@@ -54,3 +54,5 @@ Control Instructions like *if* or *while* are added. For ifs and whiles to work,
 * *a <= b* : returns 1 if a <= b, 0 otherwise
 * *a > b* : returns 1 if a > b, 0 otherwise
 * *a < b* : returns 1 if a < b, 0 otherwise
+
+Furthermore, every *if* needs an *else*, as a value needs to be returned and a single *if* cannot guarantee that. *Elseif* can be created by nesting an *if* in an *else*. 

@@ -8,16 +8,25 @@ DefineFunction
   = "def" name:Character para:( _ "(" Parameter ")" _ )* _ "{" exp:Expression "}" Break {return "(func $".concat(name,para," (result f64)\n",exp,"\n)\n");}
 
 Expression
-  = _ exp:((Bool/Define/Assign/CallFunction/MathExpression) Break)+ _ {return exp.join("\n").replace(/,/g,"");}
-  
+  = _ exp:((If/While/Define/Assign/CallFunction/MathExpression) Break)+ _ {return exp.join("\n").replace(/,/g,"");}
+
+If
+  = "if (" bool:Bool ") {" exp:Expression "}" _ "else {" elseexp:Expression "}" {
+  return "(if ".concat(bool,"\n(then (set_local 0 ",exp,"))\n")
+  .concat("(else (set_local 0 ",elseexp,")))\n(get_local 0)");
+  ;}
+
+While
+  = "while (" bool:Bool ") {" exp:Expression "}" {return exp;}
+
 Bool 
   = head:MathExpression _ op:("=="/"!="/"<="/"<"/">="/">") _ tail:MathExpression{
-    if (op === "==") { return "(f64.convert_s/i32 (f64.eq ".concat(head,tail,"))");}
-    if (op === "!=") { return "(f64.convert_s/i32 (f64.ne ".concat(head,tail,"))");}
-    if (op === "<") { return "(f64.convert_s/i32 (f64.lt ".concat(head,tail,"))");}
-    if (op === "<=") { return "(f64.convert_s/i32 (f64.le ".concat(head,tail,"))");}
-    if (op === ">") { return "(f64.convert_s/i32 (f64.gt ".concat(head,tail,"))");}
-    if (op === ">=") { return "(f64.convert_s/i32 (f64.ge ".concat(head,tail,"))");}
+    if (op === "==") { return "(f64.eq ".concat(head,tail,")");}
+    if (op === "!=") { return "(f64.ne ".concat(head,tail,")");}
+    if (op === "<") { return "(f64.lt ".concat(head,tail,")");}
+    if (op === "<=") { return "(f64.le ".concat(head,tail,")");}
+    if (op === ">") { return "(f64.gt ".concat(head,tail,")");}
+    if (op === ">=") { return "(f64.ge ".concat(head,tail,")");}
     }
   
 
