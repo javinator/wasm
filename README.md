@@ -10,7 +10,7 @@ The rest of the project just runs in your browser.
 
 ### Syntax and pipeline
 
-To use this project, simply open the 'index.html' file in your browser. Open the javascript console and use the function 'write()', for example:
+To use this project, simply open the 'index.html' file in your browser. Then write your code in the text area and click submit, e.g.
 
 ```
 write("def main {(1+2)*3+4;};")

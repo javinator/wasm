@@ -35,6 +35,29 @@ function write(input) {
 </script>
 </head>
 <body align="center">
+<table width="90%">
+<tr><td width="50%">
+ <form action="javascript:write(document.getElementById('code').value)">
+  Write your code below:<br><br>
+   <textarea id="code" name="message" rows="20" cols="50" style="padding: 5px;">
+def main {
+call fac(6);
+};
+ 
+def fac(x) {
+var y;
+if (x<1) {
+x=1;
+} else {
+y = x-1;
+x = x*call fac(y);
+};
+x;
+};
+</textarea> <br>
+  <input type="submit" value="Submit" style="margin: 10px;">
+  </form> 
+</td><td width="50%">
 The result of the loaded Webassembly function is:<br>
 <p id="result"></p>
 <script>
