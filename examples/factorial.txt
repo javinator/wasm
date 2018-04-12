@@ -1,0 +1,12 @@
+def main {
+call fac(6);
+};
+ 
+def fac(x) {
+var y;
+if (x<1) {
+x=1;
+} else {
+y = x-1;
+x = x*call fac(y);
+};
