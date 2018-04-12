@@ -55,7 +55,7 @@ Control Instructions like *if* or *while* are added. For ifs and whiles to work,
 * *a > b* : returns 1 if a > b, 0 otherwise
 * *a < b* : returns 1 if a < b, 0 otherwise
 
-Furthermore, every *if* needs an *else*, as a value needs to be returned and a single *if* cannot guarantee that. *Elseif* can be created by nesting an *if* in an *else*.
+Furthermore, every *if* needs an *else*. *Elseif* can be created by nesting an *if* in an *else*. *do {...} while* go through the loop at least once and then checks for validity. The boolean can be checked in the beginning by nesting the *while* loop in an *if*. *if* and *while* don't return values, they only allow assigns (and other *if*s and *while*s). It is imperative, that after a *if*/*while* the assigned value is called. 
 
 ```
 Input:
@@ -65,10 +65,16 @@ x = call foo(4)(1);
 call bar(x);
 };
 def foo(x)(y) {
-if (x < y) {x+y;} 
-else {x-y;};
+if (x < y) {x = x+y;} 
+else {x = x-y;};
+x;
 };
-def bar(x){x*5;};
+def bar(x){
+do {
+x = x*10;
+} while (x < 100);
+x-1;
+};
 
 Output:
 15

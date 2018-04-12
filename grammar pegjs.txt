@@ -11,12 +11,14 @@ Expression
   = _ exp:((If/While/Define/Assign/CallFunction/MathExpression) Break)+ _ {return exp.join("\n").replace(/,/g,"");}
 
 If
-  = "if (" bool:Bool ") {" exp:Expression "}" _ "else {" elseexp:Expression "}" {
-  return "(if ".concat(bool,"\n(then (set_local 0 ",exp,"))\n")
-  .concat("(else (set_local 0 ",elseexp,")))\n(get_local 0)");}
+  = "if (" bool:Bool ") {" exp:(If/While/Assign Break) "}" _ "else {" elseexp:(If/While/Assign Break) "}" {
+  return "(if ".concat(bool,"\n(then ",exp,")\n")
+  .concat("(else ",elseexp,"))");}
 
 While
-  = "while (" bool:Bool ") {" exp:Expression "}" {return exp;}
+  = "do {" exp:(If/While/Assign Break) "}" _ "while" _ "("bool:Bool")" {
+  return "(loop\n".concat(exp,"\n(br_if 0 ",bool,"))")
+  ;}
 
 Bool 
   = head:MathExpression _ op:("=="/"!="/"<="/"<"/">="/">") _ tail:MathExpression{
