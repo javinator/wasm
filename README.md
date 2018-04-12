@@ -13,7 +13,7 @@ The rest of the project just runs in your browser.
 To use this project, simply open the 'index.html' file in your browser. Then write your code in the text area and click submit, e.g.
 
 ```
-write("def main {(1+2)*3+4;};")
+def main {(1+2)*3+4;};
 ```
 
 This will open a download prompt for a 'index.wat' file. After this step you need to translate the text format to a binary format with 'wat2wasm'. Open your terminal and type:
