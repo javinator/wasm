@@ -1,0 +1,17 @@
+def main {
+call fac(6);
+};
+ 
+def fac(x) {
+var fact;
+fact = x;
+if (x>1) {
+do {
+x = x-1;
+fact = fact*x;
+} while (x>1);
+} else { if (x==1) {fact = 1;} else {fact = 0;};
+};
+fact;
+};
+
