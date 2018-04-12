@@ -11,12 +11,12 @@ Expression
   = _ exp:((If/While/Define/Assign/CallFunction/MathExpression) Break)+ _ {return exp.join("\n").replace(/,/g,"");}
 
 If
-  = "if (" bool:Bool ") {" exp:(If/While/Assign Break) "}" _ "else {" elseexp:(If/While/Assign Break) "}" {
+  = "if (" bool:Bool ") {" exp:Expression "}" _ "else {" elseexp:Expression "}" {
   return "(if ".concat(bool,"\n(then ",exp,")\n")
   .concat("(else ",elseexp,"))");}
 
 While
-  = "do {" exp:(If/While/Assign Break) "}" _ "while" _ "("bool:Bool")" {
+  = "do {" exp:Expression "}" _ "while" _ "("bool:Bool")" {
   return "(loop\n".concat(exp,"\n(br_if 0 ",bool,"))")
   ;}
 
@@ -35,7 +35,7 @@ CallFunction
   = "call" char:Character para:( _ "(" CallParameter ")" _ )* {return "(call $".concat(char,para,")");}
 
 CallParameter
-  = para:(GetVariable / Integer) {return para.replace(/\(/g,"").replace(/\)/g,"");;}
+  = para:MathExpression {return para.replace("(","").replace(")","");;}
 
 Define
   = "var" char:Character{return "(local $".concat(char).concat(" f64)"); }
