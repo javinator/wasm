@@ -6,7 +6,7 @@
 <script src="parser.js"></script> 
 <script>
 function write(input) {
-    var textToWrite = "(module\n".concat(Parser.parse(input)).concat("(export \"main\" (func $main))\n)");
+    var textToWrite = Parser.parse(input);
     var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
     var fileNameToSaveAs = "index.wat";
       var downloadLink = document.createElement("a");
