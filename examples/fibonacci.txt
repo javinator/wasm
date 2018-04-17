@@ -1,0 +1,16 @@
+def main {
+call fib(30);
+};
+ 
+def fib(x) {
+var y;
+var z;
+if (x<=2) {
+x=1;
+} else {
+y = x-1;
+z = x-2;
+x = call fib(y) + call fib(z);
+};
+x;
+};
