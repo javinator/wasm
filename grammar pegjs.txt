@@ -1,11 +1,16 @@
-Functions
-  = main:DefineMain func:DefineFunction* {return "(module\n".concat(main.concat(func).replace(/,/g,""),"(export \"main\" (func $main))\n)");}
+Module
+  = main:DefineMain func:DefineFunction* {
+  return "(module\n".concat(main.concat(func).replace(/,/g,""),"(export \"main\" (func $main))\n)")
+  ;}
 
 DefineMain
-  = "def main" _ "{" _ exp:Expression _ "}" Break _ {return "(func $main (result f64)\n".concat(exp,"\n)\n");}
+  = "def main" _ "{" _ exp:Expression _ "}" Break _ {
+  return "(func $main (result f64)\n".concat(exp,"\n)\n")
+  ;}
 
 DefineFunction
-  = "def" name:Character para:( _ "(" Parameter ")" _ )* _ "{" exp:Expression "}" Break {return "(func $".concat(name,para," (result f64)\n",exp,"\n)\n");}
+  = "def" name:Character para:( _ "(" Parameter ")" _ )* _ "{" exp:Expression "}" Break {
+  return "(func $".concat(name,para," (result f64)\n",exp,"\n)\n");}
 
 Expression
   = _ exp:((If/While/Define/Assign/CallFunction/Math) Break)+ _ {return exp.join("\n").replace(/,/g,"");}
@@ -35,10 +40,10 @@ CallFunction
   = "call" char:Character para:( _ "(" CallParameter ")" _ )* {return "(call $".concat(char,para,")");}
 
 CallParameter
-  = para:Math {return para.replace("(","").replace(")","");;}
+  = para:Math {return para.replace("(","").replace(")","");}
 
 Define
-  = "var" char:Character{return "(local $".concat(char).concat(" f64)"); }
+  = "var" char:Character{return "(local $".concat(char).concat(" f64)");}
 
 Assign
   = va:Character _ "=" _ exp:Math {return "(set_local $".concat(va.concat(exp).concat(")"));}
@@ -46,16 +51,16 @@ Assign
 Math
   = head:Term tail:(_ ("+" / "-") _ Term)*{
       return tail.reduce(function(result, element) {
-        if (element[1] === "+") { return "(f64.add ".concat(result,element[3],")"); }
-        if (element[1] === "-") { return "(f64.sub ".concat(result,element[3],")"); }
+        if (element[1] === "+") {return "(f64.add ".concat(result,element[3],")");}
+        if (element[1] === "-") {return "(f64.sub ".concat(result,element[3],")");}
       }, head);
     }
 
 Term
   = head:Factor tail:(_ ("*" / "/") _ Factor)* {
       return tail.reduce(function(result, element) {
-        if (element[1] === "*") { return "(f64.mul ".concat(result,element[3],")"); }
-        if (element[1] === "/") { return "(f64.div ".concat(result,element[3],")"); }
+        if (element[1] === "*") {return "(f64.mul ".concat(result,element[3],")");}
+        if (element[1] === "/") {return "(f64.div ".concat(result,element[3],")");}
       }, head);
     }
     
@@ -63,22 +68,20 @@ Parameter
   = char:Character {return "param $".concat(char, " f64");}
 
 Factor
-  = "(" _ expr:Math _ ")" { return expr; }
+  = "(" _ expr:Math _ ")" {return expr;}
   / CallFunction / Integer / GetVariable
 
 Integer "integer"
-  = _ [0-9]+ { return "(f64.const ".concat(text(),")"); }
+  = _ [0-9]+ {return "(f64.const ".concat(text(),")");}
   
 GetVariable
-  = char:Character { return "(get_local $".concat(char,")");}
+  = char:Character {return "(get_local $".concat(char,")");}
   
 Character "character"
-  = _[a-zA-Z]+ { return text().replace(" ","")}
+  = _[a-zA-Z]+ {return text().replace(" ","");}
 
 Break "break"
-  = [;]_ {return "";}
+  = [;]_ {return;}
 
 _ "whitespace"
   = [ \t\r\n]*
-
-              

@@ -1,0 +1,229 @@
+{ 
+	class Node {
+		constructor() {
+        	this.name = "Abstract Node";
+            this.data = [];
+			this.children = [];
+		}
+	}
+    
+   class Module extends Node {
+    	constructor(main,func) {
+        	super();
+            this.name = "Module";
+            this.children = [main,func];
+            this.data = [];
+		}
+    }
+
+	class DefineMain extends Node {
+    	constructor(exp) {
+        	super();
+            this.name = "Define Main";
+            this.children = [exp];
+            this.data = [];
+		}
+	}
+
+	class DefineFunction extends Node {
+    	constructor(name,para,exp) {
+        	super();
+            this.name = "Define Function";
+            this.children = [exp];
+            this.data = [name,para];
+		}
+	}
+    
+    class Expression extends Node {
+    	constructor(exp) {
+        	super();
+            this.name = "Expression";
+            this.children = [exp];
+            this.data = [];
+        }
+	}
+    
+    class If extends Node {
+    	constructor(bool,exp) {
+        	super();
+            this.name = "If";
+            this.children = [bool,exp];
+            this.data = [];
+        }
+	}
+    
+    class While extends Node {
+    	constructor(bool,exp) {
+        	super();
+            this.name = "While";
+            this.children = [bool,exp];
+            this.data = [];
+        }
+	}
+    
+    class Bool extends Node {
+    	constructor(head,op,tail) {
+        	super();
+            this.name = "Bool";
+            this.children = [head,tail];
+            this.data = [op];
+        }
+	}
+    
+    class CallFunction extends Node {
+    	constructor(name,para) {
+        	super();
+            this.name = "Call Function";
+            this.children = [para]
+            this.data = [name];
+        }
+	}
+    
+    class CallParameter extends Node {
+    	constructor(para) {
+        	super();
+            this.name = "Call Parameter";
+            this.children = [para];
+        }
+	}
+    
+    class Define extends Node {
+    	constructor(char) {
+        	super();
+            this.name = "Define";
+            this.data = [char];
+        }
+	}
+    
+    class Assign extends Node {
+    	constructor(char, exp) {
+        	super();
+            this.name = "Assign";
+            this.children = [char, exp];
+        }
+	}
+    
+    class Math extends Node {
+    	constructor(head,op,tail) {
+        	super();
+            this.name = "Math";
+            this.children = [head,tail];
+            this.data = [op];
+        }
+	}
+    
+    class Term extends Node {
+    	constructor(head,op,tail) {
+        	super();
+            this.name = "Term";
+            this.children = [head,tail];
+            this.data = [op];
+        }
+	}
+
+	class Factor extends Node {
+    	constructor(expr) {
+        	super();
+            this.name = "Factor";
+            this.children = [expr];
+        }
+	}
+    
+    class Integer extends Node {
+    	constructor(int) {
+        	super();
+            this.name = "Integer";
+            this.data = [int];
+        }
+	}
+    
+    class GetVariable extends Node {
+    	constructor(char) {
+        	super();
+            this.name = "Get Variable";
+            this.data = [char];
+        }
+	}
+
+	class Character extends Node {
+    	constructor(char) {
+        	super();
+            this.name = "Character";
+            this.data = [char];
+        }
+	}
+}
+Module
+  = main:DefineMain func:DefineFunction* 
+  {return new Module(main,func);} 
+  
+DefineMain
+  = "def main" _ "{" _ exp:Expression _ "}" Break _ 
+  {return new DefineMain(exp);}
+
+DefineFunction
+  = "def" name:Character para:( _ "(" Parameter ")" _ )* _ "{" exp:Expression "}" Break 
+  {return new DefineFunction(name,para,exp);}
+
+Expression
+  = _ exp:((If/While/Define/Assign/CallFunction/Math) Break)+ _ 
+  {return new Expression(exp);}
+
+If
+  = "if (" bool:Bool ") {" exp:Expression "}" _ "else {" elseexp:Expression "}" 
+  {return new If(bool,exp);}
+
+While
+  = "do {" exp:Expression "}" _ "while" _ "("bool:Bool")" 
+  {return new While(bool,exp);}
+
+Bool 
+  = head:Math _ op:("=="/"!="/"<="/"<"/">="/">") _ tail:Math
+  {return new Bool(head,op,tail);}
+  
+CallFunction
+  = "call" char:Character para:( _ "(" CallParameter ")" _ )* 
+  {return new CallFunction(char,para);}
+
+CallParameter
+  = para:Math {return new CallParameter(para);}
+
+Define
+  = "var" char:Character {return new Define(char);}
+
+Assign
+  = char:Character _ "=" _ exp:Math {return new Assign(char,exp);}
+
+Math
+  = head:Term tail:(_ ("+" / "-") _ Term)*{
+      return tail.reduce(function(result, element) {
+        return new Math(result,element[1],element[3]);
+      }, head);}
+
+Term
+  = head:Factor tail:(_ ("*" / "/") _ Factor)* {
+      return tail.reduce(function(result, element) {
+        return new Math(result,element[1],element[3]);
+      }, head);}
+    
+Parameter
+  = char:Character {return "param $".concat(char, " f64");}
+
+Factor
+  = "(" _ expr:Math _ ")" {return new Factor(expr);}
+  / CallFunction / Integer / GetVariable
+
+Integer "integer"
+  = _ [0-9]+ {return new Integer(text());}
+  
+GetVariable
+  = char:Character {return new GetVariable(char);}
+  
+Character "character"
+  = _[a-zA-Z]+ {return text().replace(" ","");}
+
+Break "break"
+  = [;]_ {return;}
+
+_ "whitespace"
+  = [ \t\r\n]*
