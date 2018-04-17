@@ -33,8 +33,8 @@ class DefineFunction extends Node {
 	constructor(name,para,exp) {
 		super();
 		this.name = "Define Function";
-		this.children = [exp];
-		this.data = [name,para];
+		this.children = [para,exp];
+		this.data = [name];
 	}
 	visit() {
 		return visit.visitDefineFunction(this);
