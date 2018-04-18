@@ -90,7 +90,8 @@ class If extends Node {
     		constructor(name,para) {
         		super();
             		this.name = "Call Function";
-            		this.data = [name,para];
+			this.children = [para];
+            		this.data = [name];
         	}
           visit() {
     	return visit.visitCallFunction(this);

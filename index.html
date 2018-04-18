@@ -3,10 +3,15 @@
 <head>
 <title>JS Parser and Wasm Player</title>
 <meta charset="UTF-8">
+<script src="visitor.js"></script>
+<script>const visit = new Visitor();</script>
+<script src="node.js"></script>
 <script src="parser.js"></script> 
 <script>
 function write(input) {
-    var textToWrite = Parser.parse(input);
+    var root = Parser.parse(input);
+    console.log(root);
+    var textToWrite = visit.visitModule(root);
     var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
     var fileNameToSaveAs = "index.wat";
       var downloadLink = document.createElement("a");

@@ -2,29 +2,35 @@ class Visitor {
 
 visitModule(node) {
 	var out = "";
-  var i;
-  for (i = 0; i < node.children.length; i++) {
-  	out = out.concat(node.children[i].visit());
+	var i;
+	out = out.concat(node.children[0].visit());
+	for (i = 0; i < node.children[1].length; i++) {
+  	if (node.children[1][i].length != 0) {out = out.concat(node.children[1][i].visit());}
   }
   
 	return "(module\n".concat(out,"(export \"main\" (func $main))\n)");
 }
 
 visitDefineMain(node) {
-	return "(func $main (result f64)\n".concat(node.children[0].visit(),"\n)\n");
+	return "(func $main (result f64)\n".concat(node.children[0].visit(),")\n");
 }
 
 visitDefineFunction(node) {
 	var out = "";
   var i;
   for (i = 0; i < node.children[0].length; i++) {
-  	out = out.concat(node.children[0][i].visit());
+  	out = out.concat(node.children[0][i][2].visit());
   }
-	return "(func $".concat(node.data[0],out," (result f64)\n",node.children[1].visit(),"\n)\n");
+	return "(func $".concat(node.data[0],out," (result f64)\n",node.children[1].visit(),")\n");
 }
 
 visitExpression(node) {
-	return node.children[0].visit();
+	var out = "";
+	var i;
+	for (i = 0; i < node.children[0].length; i++) {
+		out = out.concat(node.children[0][i][0].visit(),"\n");
+	}
+	return out;
 }
 
 visitIf(node) {
@@ -45,7 +51,12 @@ visitBool(node) {
 }
 
 visitCallFunction(node) {
-	return "(call $".concat(node.data[0],node.data[1],")");
+	var out = "(call $".concat(node.data[0]);
+	var i;
+	for (i=0; i < node.children[0].length; i++) {
+		out =  out.concat(node.children[0][i][2].visit());
+	}
+	return out.concat(")");	
 }
 
 visitCallParameter(node) {
@@ -63,6 +74,7 @@ visitAssign(node) {
 visitMath(node) {
 	if (node.data[0] === "+") {return "(f64.add ".concat(node.children[0].visit(),node.children[1].visit(),")");}
         if (node.data[0] === "-") {return "(f64.sub ".concat(node.children[0].visit(),node.children[1].visit(),")");}
+	else {return "Error: Wrong operator";}
 }
 
 visitTerm(node) {
