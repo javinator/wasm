@@ -11,7 +11,7 @@ DefineFunction
   {return new DefineFunction(name,para,exp);}
 
 Expression
-  = _ exp:((If/While/Define/Assign/CallFunction/Math) Break)+ _ 
+  = _ exp:((If/While/Define/Assign/Math) Break)+ _ 
   {return new Expression(exp);}
 
 If
@@ -42,14 +42,13 @@ Assign
 Math
   = head:Term tail:(_ ("+" / "-") _ Term)*{
       return tail.reduce(function(result, element) {
-        if (element[1] === "+" || element[1] === "-") {return new Math(result,element[1],element[3]);}
-	else {return new Term(result,element[1],[element[3]);}
-      }, head);}
+        return new Math(result,element[1],element[3]);
+	}, head);}
 
 Term
   = head:Factor tail:(_ ("*" / "/") _ Factor)* {
       return tail.reduce(function(result, element) {
-        return new Math(result,element[1],element[3]);
+        return new Term(result,element[1],element[3]);
       }, head);}
     
 Parameter

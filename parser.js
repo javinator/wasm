@@ -198,8 +198,8 @@ window.Parser = /*
         peg$c54 = peg$literalExpectation("-", false),
         peg$c55 = function(head, tail) {
               return tail.reduce(function(result, element) {
-              return new Math(result,element[1],element[3]);
-              }, head);},
+                return new Math(result,element[1],element[3]);
+        	}, head);},
         peg$c56 = "*",
         peg$c57 = peg$literalExpectation("*", false),
         peg$c58 = "/",
@@ -660,10 +660,7 @@ window.Parser = /*
             if (s4 === peg$FAILED) {
               s4 = peg$parseAssign();
               if (s4 === peg$FAILED) {
-                s4 = peg$parseCallFunction();
-                if (s4 === peg$FAILED) {
-                  s4 = peg$parseMath();
-                }
+                s4 = peg$parseMath();
               }
             }
           }
@@ -693,10 +690,7 @@ window.Parser = /*
                 if (s4 === peg$FAILED) {
                   s4 = peg$parseAssign();
                   if (s4 === peg$FAILED) {
-                    s4 = peg$parseCallFunction();
-                    if (s4 === peg$FAILED) {
-                      s4 = peg$parseMath();
-                    }
+                    s4 = peg$parseMath();
                   }
                 }
               }
