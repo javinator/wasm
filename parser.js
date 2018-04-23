@@ -138,41 +138,37 @@ window.Parser = /*
 
     var peg$FAILED = {},
 
-        peg$startRuleFunctions = { Functions: peg$parseFunctions },
-        peg$startRuleFunction  = peg$parseFunctions,
+        peg$startRuleFunctions = { Module: peg$parseModule },
+        peg$startRuleFunction  = peg$parseModule,
 
-        peg$c0 = function(main, func) {return "(module\n".concat(main.concat(func).replace(/,/g,""),"(export \"main\" (func $main))\n)");},
+        peg$c0 = function(main, func) {return new Module(main,func);},
         peg$c1 = "def main",
         peg$c2 = peg$literalExpectation("def main", false),
         peg$c3 = "{",
         peg$c4 = peg$literalExpectation("{", false),
         peg$c5 = "}",
         peg$c6 = peg$literalExpectation("}", false),
-        peg$c7 = function(exp) {return "(func $main (result f64)\n".concat(exp,"\n)\n");},
+        peg$c7 = function(exp) {return new DefineMain(exp);},
         peg$c8 = "def",
         peg$c9 = peg$literalExpectation("def", false),
         peg$c10 = "(",
         peg$c11 = peg$literalExpectation("(", false),
         peg$c12 = ")",
         peg$c13 = peg$literalExpectation(")", false),
-        peg$c14 = function(name, para, exp) {return "(func $".concat(name,para," (result f64)\n",exp,"\n)\n");},
-        peg$c15 = function(exp) {return exp.join("\n").replace(/,/g,"");},
+        peg$c14 = function(name, para, exp) {return new DefineFunction(name,para,exp);},
+        peg$c15 = function(exp) {return new Expression(exp);},
         peg$c16 = "if (",
         peg$c17 = peg$literalExpectation("if (", false),
         peg$c18 = ") {",
         peg$c19 = peg$literalExpectation(") {", false),
         peg$c20 = "else {",
         peg$c21 = peg$literalExpectation("else {", false),
-        peg$c22 = function(bool, exp, elseexp) {
-          return "(if ".concat(bool,"\n(then ",exp,")\n")
-          .concat("(else ",elseexp,"))");},
+        peg$c22 = function(bool, exp, elseexp) {return new If(bool,exp,elseexp);},
         peg$c23 = "do {",
         peg$c24 = peg$literalExpectation("do {", false),
         peg$c25 = "while",
         peg$c26 = peg$literalExpectation("while", false),
-        peg$c27 = function(exp, bool) {
-          return "(loop\n".concat(exp,"\n(br_if 0 ",bool,"))")
-          ;},
+        peg$c27 = function(exp, bool) {return new While(bool,exp);},
         peg$c28 = "==",
         peg$c29 = peg$literalExpectation("==", false),
         peg$c30 = "!=",
@@ -185,59 +181,48 @@ window.Parser = /*
         peg$c37 = peg$literalExpectation(">=", false),
         peg$c38 = ">",
         peg$c39 = peg$literalExpectation(">", false),
-        peg$c40 = function(head, op, tail) {
-            if (op === "==") { return "(f64.eq ".concat(head,tail,")");}
-            if (op === "!=") { return "(f64.ne ".concat(head,tail,")");}
-            if (op === "<") { return "(f64.lt ".concat(head,tail,")");}
-            if (op === "<=") { return "(f64.le ".concat(head,tail,")");}
-            if (op === ">") { return "(f64.gt ".concat(head,tail,")");}
-            if (op === ">=") { return "(f64.ge ".concat(head,tail,")");}
-            },
+        peg$c40 = function(head, op, tail) {return new Bool(head,op,tail);},
         peg$c41 = "call",
         peg$c42 = peg$literalExpectation("call", false),
-        peg$c43 = function(char, para) {return "(call $".concat(char,para,")");},
-        peg$c44 = function(para) {return para.replace("(","").replace(")","");;},
+        peg$c43 = function(char, para) {return new CallFunction(char,para);},
+        peg$c44 = function(para) {return new CallParameter(para);},
         peg$c45 = "var",
         peg$c46 = peg$literalExpectation("var", false),
-        peg$c47 = function(char) {return "(local $".concat(char).concat(" f64)"); },
+        peg$c47 = function(char) {return new Define(char);},
         peg$c48 = "=",
         peg$c49 = peg$literalExpectation("=", false),
-        peg$c50 = function(va, exp) {return "(set_local $".concat(va.concat(exp).concat(")"));},
+        peg$c50 = function(char, exp) {return new Assign(char,exp);},
         peg$c51 = "+",
         peg$c52 = peg$literalExpectation("+", false),
         peg$c53 = "-",
         peg$c54 = peg$literalExpectation("-", false),
         peg$c55 = function(head, tail) {
               return tail.reduce(function(result, element) {
-                if (element[1] === "+") { return "(f64.add ".concat(result,element[3],")"); }
-                if (element[1] === "-") { return "(f64.sub ".concat(result,element[3],")"); }
-              }, head);
-            },
+                return new Math(result,element[1],element[3]);
+        	}, head);},
         peg$c56 = "*",
         peg$c57 = peg$literalExpectation("*", false),
         peg$c58 = "/",
         peg$c59 = peg$literalExpectation("/", false),
         peg$c60 = function(head, tail) {
               return tail.reduce(function(result, element) {
-                if (element[1] === "*") { return "(f64.mul ".concat(result,element[3],")"); }
-                if (element[1] === "/") { return "(f64.div ".concat(result,element[3],")"); }
-              }, head);
-            },
-        peg$c61 = function(char) {return "param $".concat(char, " f64");},
-        peg$c62 = function(expr) { return expr; },
+                return new Term(result,element[1],element[3]);
+              }, head);},
+        peg$c61 = function(char) {return new Parameter(char);},
+        peg$c62 = function(expr) {return new Factor(expr);},
         peg$c63 = peg$otherExpectation("integer"),
         peg$c64 = /^[0-9]/,
         peg$c65 = peg$classExpectation([["0", "9"]], false, false),
-        peg$c66 = function() { return "(f64.const ".concat(text(),")"); },
-        peg$c67 = function(char) { return "(get_local $".concat(char,")");},
+        peg$c66 = function() {return new Integer(text());},
+        peg$c67 = function(char) {return new GetVariable(char);},
         peg$c68 = peg$otherExpectation("character"),
         peg$c69 = /^[a-zA-Z]/,
         peg$c70 = peg$classExpectation([["a", "z"], ["A", "Z"]], false, false),
-        peg$c71 = function() { return text().replace(" ","")},
+        peg$c71 = function() {return text().replace(" ","");},
         peg$c72 = peg$otherExpectation("break"),
         peg$c73 = /^[;]/,
         peg$c74 = peg$classExpectation([";"], false, false),
-        peg$c75 = function() {return "";},
+        peg$c75 = function() {return;},
         peg$c76 = peg$otherExpectation("whitespace"),
         peg$c77 = /^[ \t\r\n]/,
         peg$c78 = peg$classExpectation([" ", "\t", "\r", "\n"], false, false),
@@ -378,7 +363,7 @@ window.Parser = /*
       );
     }
 
-    function peg$parseFunctions() {
+    function peg$parseModule() {
       var s0, s1, s2, s3;
 
       s0 = peg$currPos;
@@ -675,10 +660,7 @@ window.Parser = /*
             if (s4 === peg$FAILED) {
               s4 = peg$parseAssign();
               if (s4 === peg$FAILED) {
-                s4 = peg$parseCallFunction();
-                if (s4 === peg$FAILED) {
-                  s4 = peg$parseMath();
-                }
+                s4 = peg$parseMath();
               }
             }
           }
@@ -708,10 +690,7 @@ window.Parser = /*
                 if (s4 === peg$FAILED) {
                   s4 = peg$parseAssign();
                   if (s4 === peg$FAILED) {
-                    s4 = peg$parseCallFunction();
-                    if (s4 === peg$FAILED) {
-                      s4 = peg$parseMath();
-                    }
+                    s4 = peg$parseMath();
                   }
                 }
               }
