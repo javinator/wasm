@@ -24,7 +24,7 @@ wat2wasm index.wat -o index.wasm
 
 After that, you can reload the 'index.html' and the result should be displayed.
 
-For the syntax see [Syntax](syntax.md)
+For the syntax see [Syntax](resources/syntax.md)
 
 #### AST
 
