@@ -11,7 +11,7 @@ DefineFunction
   {return new DefineFunction(name,para,exp);}
 
 Expression
-  = _ exp:((If/While/Define/Assign/Math) Break)+ _ 
+  = _ exp:((If/While/CreateArray/Define/Assign/Math) Break)+ _ 
   {return new Expression(exp);}
 
 If
@@ -25,6 +25,9 @@ While
 Bool 
   = head:Math _ op:("=="/"!="/"<="/"<"/">="/">") _ tail:Math
   {return new Bool(head,op,tail);}
+
+CreateArray
+  = "array" _ char:Character _ "[" _ ele:(Integer/GetVariable)+ _ "]" {return new CreateArray(char,ele);}
   
 CallFunction
   = "call" char:Character para:( _ "(" CallParameter ")" _ )* 

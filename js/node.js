@@ -12,7 +12,7 @@ class Module extends Node {
             this.name = "Module";
             this.children = [main,func];
 		}
-    visit() {
+    accept() {
     	return visit.visitModule(this);
     }
     }
@@ -23,7 +23,7 @@ class DefineMain extends Node {
             this.name = "Define Main";
             this.children = [exp];
 		}
-    visit() {
+    accept() {
     	return visit.visitDefineMain(this);
     }
 	}
@@ -35,7 +35,7 @@ class DefineFunction extends Node {
             this.children = [para,exp];
             this.data = [name];
 		}
-    visit() {
+    accept() {
     	return visit.visitDefineFunction(this);
     }
 	}
@@ -44,9 +44,9 @@ class Expression extends Node {
     	constructor(exp) {
         	super();
             this.name = "Expression";
-            this.children = [exp];
+            this.children = exp;
         }
-       visit() {
+       accept() {
     	return visit.visitExpression(this);
     }
 	}
@@ -57,7 +57,7 @@ class If extends Node {
             this.name = "If";
             this.children = [bool,exp,elseexp];
         }
-        visit() {
+        accept() {
     	return visit.visitIf(this);
     }
 	}
@@ -68,7 +68,7 @@ class If extends Node {
             		this.name = "While";
             		this.children = [bool,exp];
         	}
-          visit() {
+          accept() {
     	return visit.visitWhile(this);
     }
 	}
@@ -80,7 +80,7 @@ class If extends Node {
             		this.children = [head,tail];
             		this.data = [op];
         	}
-          visit() {
+          accept() {
     	return visit.visitBool(this);
     }
 	}
@@ -90,10 +90,10 @@ class If extends Node {
     		constructor(name,para) {
         		super();
             		this.name = "Call Function";
-			this.children = [para];
+			this.children = para;
             		this.data = [name];
         	}
-          visit() {
+          accept() {
     	return visit.visitCallFunction(this);
     }
 	}
@@ -104,7 +104,7 @@ class If extends Node {
             		this.name = "Call Parameter";
             		this.children = [para];
         	}
-          visit() {
+          accept() {
     	return visit.visitCallParameter(this);
     }
 	}
@@ -115,7 +115,7 @@ class If extends Node {
             		this.name = "Define";
             		this.data = [char];
         	}
-          visit() {
+          accept() {
     	return visit.visitDefine(this);
     }
 	}
@@ -127,7 +127,7 @@ class If extends Node {
             		this.children = [exp];
             		this.data = [char];
         	}
-          visit() {
+          accept() {
     	return visit.visitAssign(this);
     }
 	}
@@ -139,7 +139,7 @@ class If extends Node {
             		this.children = [head,tail];
             		this.data = [op];
         	}
-          visit() {
+          accept() {
     	return visit.visitMath(this);
     }
 	}
@@ -151,7 +151,7 @@ class If extends Node {
             		this.children = [head,tail];
             		this.data = [op];
         	}
-          visit() {
+          accept() {
     	return visit.visitTerm(this);
     }
 	}
@@ -162,7 +162,7 @@ class If extends Node {
             		this.name = "Parameter";
             		this.data = [char];
         	}
-          visit() {
+          accept() {
     	return visit.visitParameter(this);
     }
 	}
@@ -173,9 +173,21 @@ class If extends Node {
             		this.name = "Factor";
             		this.children = [exp];
         	}
-          visit() {
+          accept() {
     	return visit.visitFactor(this);
     }
+	}
+
+	class CreateArray extends Node {
+		constructor(char,elements) {
+			super();
+			this.name = "Array";
+			this.data = [char];
+			this.children = elements;
+		}
+		accept() {
+			return visit.visitCreateArray(this);
+		}
 	}
 
     	class Integer extends Node {
@@ -184,7 +196,7 @@ class If extends Node {
             		this.name = "Integer";
             		this.data = [int];
         	}
-          visit() {
+          accept() {
     	return visit.visitInteger(this);
     }
 	}
@@ -195,7 +207,7 @@ class If extends Node {
             		this.name = "Get Variable";
             		this.data = [char];
         	}
-          visit() {
+          accept() {
     	return visit.visitGetVariable(this);
     }
 	}
@@ -206,7 +218,7 @@ class If extends Node {
             		this.name = "Character";
             		this.data = [char];
         	}
-          visit() {
+          accept() {
     	return visit.visitCharacter(this);
     }
 	}

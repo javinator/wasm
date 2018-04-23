@@ -1,93 +1,115 @@
+var variables = ["main"];
+var memlen = 0;
+var memarr = [];
+
 class Visitor {
 
 visitModule(node) {
 	var out = "";
 	var i;
-	out = out.concat(node.children[0].visit());
+	out = out.concat(node.children[0].accept());
 	for (i = 0; i < node.children[1].length; i++) {
-  	if (node.children[1][i].length != 0) {out = out.concat(node.children[1][i].visit());}
+  	if (node.children[1][i].length != 0) {out = out.concat(node.children[1][i].accept());}
   }
   
-	return "(module\n".concat(out,"(export \"main\" (func $main))\n)");
+	return "(module\n(memory $0 1)\n".concat(out,"(export \"main\" (func $main))\n)");
 }
 
 visitDefineMain(node) {
-	return "(func $main (result f64)\n".concat(node.children[0].visit(),")\n");
+	return "(func $main (result f64)\n".concat(node.children[0].accept(),")\n");
 }
 
 visitDefineFunction(node) {
+	variables.push(node.data[0]);
 	var out = "";
   var i;
   for (i = 0; i < node.children[0].length; i++) {
-  	out = out.concat(node.children[0][i][2].visit());
+  	out = out.concat(node.children[0][i][2].accept());
   }
-	return "(func $".concat(node.data[0],out," (result f64)\n",node.children[1].visit(),")\n");
+	return "(func $".concat(node.data[0],out," (result f64)\n",node.children[1].accept(),")\n");
 }
 
 visitExpression(node) {
 	var out = "";
 	var i;
-	for (i = 0; i < node.children[0].length; i++) {
-		out = out.concat(node.children[0][i][0].visit(),"\n");
+	for (i = 0; i < node.children.length; i++) {
+		out = out.concat(node.children[i][0].accept(),"\n");
 	}
 	return out;
 }
 
 visitIf(node) {
-	return "(if ".concat(node.children[0].visit(),"\n(then ",node.children[1].visit(),")\n").concat("(else ",node.children[2].visit(),"))");
+	return "(if ".concat(node.children[0].accept(),"\n(then ",node.children[1].accept(),")\n").concat("(else ",node.children[2].accept(),"))");
 }
 
 visitWhile(node) {
-	return "(loop\n".concat(node.children[1].visit(),"\n(br_if 0 ",node.children[0].visit(),"))");
+	return "(loop\n".concat(node.children[1].accept(),"\n(br_if 0 ",node.children[0].accept(),"))");
 }
 
 visitBool(node) {
-	if (node.data[0] === "==") { return "(f64.eq ".concat(node.children[0].visit(),node.children[1].visit(),")");}
-    	if (node.data[0] === "!=") { return "(f64.ne ".concat(node.children[0].visit(),node.children[1].visit(),")");}
-    	if (node.data[0] === "<") { return "(f64.lt ".concat(node.children[0].visit(),node.children[1].visit(),")");}
-    	if (node.data[0] === "<=") { return "(f64.le ".concat(node.children[0].visit(),node.children[1].visit(),")");}
-    	if (node.data[0] === ">") { return "(f64.gt ".concat(node.children[0].visit(),node.children[1].visit(),")");}
-    	if (node.data[0] === ">=") { return "(f64.ge ".concat(node.children[0].visit(),node.children[1].visit(),")");}
+	if (node.data[0] === "==") { return "(f64.eq ".concat(node.children[0].accept(),node.children[1].accept(),")");}
+    	if (node.data[0] === "!=") { return "(f64.ne ".concat(node.children[0].accept(),node.children[1].accept(),")");}
+    	if (node.data[0] === "<") { return "(f64.lt ".concat(node.children[0].accept(),node.children[1].accept(),")");}
+    	if (node.data[0] === "<=") { return "(f64.le ".concat(node.children[0].accept(),node.children[1].accept(),")");}
+    	if (node.data[0] === ">") { return "(f64.gt ".concat(node.children[0].accept(),node.children[1].accept(),")");}
+    	if (node.data[0] === ">=") { return "(f64.ge ".concat(node.children[0].accept(),node.children[1].accept(),")");}
 }
 
 visitCallFunction(node) {
 	var out = "(call $".concat(node.data[0]);
 	var i;
-	for (i=0; i < node.children[0].length; i++) {
-		out =  out.concat(node.children[0][i][2].visit());
+	for (i=0; i < node.children.length; i++) {
+		out =  out.concat(node.children[i][2].accept());
 	}
 	return out.concat(")");	
 }
 
 visitCallParameter(node) {
-	return node.children[0].visit();
+	return node.children[0].accept();
 }
 
 visitDefine(node) {
+	variables.push(node.data[0]);
 	return "(local $".concat(node.data[0]).concat(" f64)");
 }
 
 visitAssign(node) {
-	return "(set_local $".concat(node.data[0],node.children[0].visit(),")");
+	return "(set_local $".concat(node.data[0],node.children[0].accept(),")");
 }
 
 visitMath(node) {
-	if (node.data[0] === "+") {return "(f64.add ".concat(node.children[0].visit(),node.children[1].visit(),")");}
-        if (node.data[0] === "-") {return "(f64.sub ".concat(node.children[0].visit(),node.children[1].visit(),")");}
+	if (node.data[0] === "+") {return "(f64.add ".concat(node.children[0].accept(),node.children[1].accept(),")");}
+        if (node.data[0] === "-") {return "(f64.sub ".concat(node.children[0].accept(),node.children[1].accept(),")");}
 	else {return "Error: Wrong operator";}
 }
 
 visitTerm(node) {
-	if (node.data[0] === "*") {return "(f64.mul ".concat(node.children[0].visit(),node.children[1].visit(),")");}
-        if (node.data[0] === "/") {return "(f64.div ".concat(node.children[0].visit(),node.children[1].visit(),")");}
+	if (node.data[0] === "*") {return "(f64.mul ".concat(node.children[0].accept(),node.children[1].accept(),")");}
+        if (node.data[0] === "/") {return "(f64.div ".concat(node.children[0].accept(),node.children[1].accept(),")");}
 }
 
 visitParameter(node) {
 	return "(param $".concat(node.data[0], " f64)");
 }
 
+visitCreateArray(node) {
+	if (variables.includes(node.data[0])) { return "ERROR: Name already in use\n"; }
+	else {
+	variables.push(node.data[0]);
+	var out = "";
+	memarr.push(node.data[0]);
+	memarr.push(node.children.length);
+	var i;
+	for (i=0; i < node.children.length; i++) {
+		out =  out.concat("(f64.store offset=".concat(memlen," (i32.const 0)",node.children[i].accept()),")\n");
+		memlen = memlen + 8;
+	}
+	return out;
+	}	
+}
+
 visitFactor(node) {
-	return node.children[0].visit();
+	return node.children[0].accept();
 }
 
 visitInteger(node) {

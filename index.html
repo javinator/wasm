@@ -4,11 +4,16 @@
 <title>JS Parser and Wasm Player</title>
 <meta charset="UTF-8">
 <script src="js/visitor.js"></script>
-<script>const visit = new Visitor();</script>
+<script>
+const visit = new Visitor();
+</script>
 <script src="js/node.js"></script>
 <script src="js/parser.js"></script> 
 <script>
 function write(input) {
+    variables = [];
+    memlen = 0;
+    memarr = [];
     var root = Parser.parse(input);
     console.log(root);
     var textToWrite = visit.visitModule(root);
