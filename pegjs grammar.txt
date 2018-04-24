@@ -33,11 +33,8 @@ GetArrayElement
   = "get" _ char:Character _ "[" _ ele:(Integer/GetVariable) _ "]" {return new GetArrayElement(char,ele);}
   
 CallFunction
-  = "call" char:Character para:( _ "(" CallParameter ")" _ )* 
+  = "call" char:Character para:( _ "(" Math ")" _ )* 
   {return new CallFunction(char,para);}
-
-CallParameter
-  = para:Math {return new CallParameter(para);}
 
 Define
   = "var" char:Character {return new Define(char);}
