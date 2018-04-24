@@ -98,17 +98,6 @@ class If extends Node {
     }
 	}
 
-    	class CallParameter extends Node {
-    		constructor(para) {
-        		super();
-            		this.name = "Call Parameter";
-            		this.children = [para];
-        	}
-          accept() {
-    	return visit.visitCallParameter(this);
-    }
-	}
-
 	class Define extends Node {
     		constructor(char) {
         		super();

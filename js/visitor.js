@@ -62,10 +62,6 @@ visitCallFunction(node) {
 	return out.concat(")");	
 }
 
-visitCallParameter(node) {
-	return node.children[0].accept();
-}
-
 visitDefine(node) {
 	return "(local $".concat(node.data[0]).concat(" f64)");
 }
