@@ -190,6 +190,18 @@ class If extends Node {
 		}
 	}
 
+	class GetArrayElement extends Node {
+		constructor(char,index) {
+			super();
+			this.name = "Get Array Element";
+			this.data = [char];
+			this.children = [index];
+		}
+		accept() {
+			return visit.visitGetArrayElement(this);
+		}
+	}
+
     	class Integer extends Node {
     		constructor(int) {
         		super();

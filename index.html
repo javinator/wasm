@@ -11,10 +11,10 @@ const visit = new Visitor();
 <script src="js/parser.js"></script> 
 <script>
 function write(input) {
-    variables = [];
     memlen = 0;
     memarr = [];
     var root = Parser.parse(input);
+    console.log(memarr);
     console.log(root);
     var textToWrite = visit.visitModule(root);
     var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});

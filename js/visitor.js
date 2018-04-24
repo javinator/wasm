@@ -1,4 +1,3 @@
-var variables = ["main"];
 var memlen = 0;
 var memarr = [];
 
@@ -20,7 +19,6 @@ visitDefineMain(node) {
 }
 
 visitDefineFunction(node) {
-	variables.push(node.data[0]);
 	var out = "";
   var i;
   for (i = 0; i < node.children[0].length; i++) {
@@ -69,7 +67,6 @@ visitCallParameter(node) {
 }
 
 visitDefine(node) {
-	variables.push(node.data[0]);
 	return "(local $".concat(node.data[0]).concat(" f64)");
 }
 
@@ -93,19 +90,33 @@ visitParameter(node) {
 }
 
 visitCreateArray(node) {
-	if (variables.includes(node.data[0])) { return "ERROR: Name already in use\n"; }
+	if (memarr.includes(node.data[0])) { return "ERROR: Name already in use\n"; }
 	else {
-	variables.push(node.data[0]);
 	var out = "";
 	memarr.push(node.data[0]);
+	memarr.push(memlen);
 	memarr.push(node.children.length);
 	var i;
+	var off;
 	for (i=0; i < node.children.length; i++) {
-		out =  out.concat("(f64.store offset=".concat(memlen," (i32.const 0)",node.children[i].accept()),")\n");
-		memlen = memlen + 8;
+		off = memlen*8;
+		out =  out.concat("(f64.store offset=".concat(off," (i32.const 0)",node.children[i].accept()),")\n");
+		memlen = memlen + 1;
 	}
 	return out;
 	}	
+}
+
+visitGetArrayElement(node) {
+	if (memarr.includes(node.data[0])) {
+		var i = memarr.indexOf(node.data[0]);
+		var off;
+		if (node.children[0].data[0] >= memarr[i+2]) {return "ERROR: Array out of bound";}
+		else {
+			off = (memarr[i+1] + node.children[0].data[0])*8;
+			return "(f64.load offset=".concat(off,"(i32.const 0))");
+		}
+	} else { return "ERROR: Array not yet created"; }
 }
 
 visitFactor(node) {

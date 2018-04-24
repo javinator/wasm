@@ -11,7 +11,7 @@ DefineFunction
   {return new DefineFunction(name,para,exp);}
 
 Expression
-  = _ exp:((If/While/CreateArray/Define/Assign/Math) Break)+ _ 
+  = _ exp:((If/While/CreateArray/GetArrayElement/Define/Assign/Math) Break)+ _ 
   {return new Expression(exp);}
 
 If
@@ -28,6 +28,9 @@ Bool
 
 CreateArray
   = "array" _ char:Character _ "[" _ ele:(Integer/GetVariable)+ _ "]" {return new CreateArray(char,ele);}
+  
+GetArrayElement
+  = "get" _ char:Character _ "[" _ ele:(Integer/GetVariable) _ "]" {return new GetArrayElement(char,ele);}
   
 CallFunction
   = "call" char:Character para:( _ "(" CallParameter ")" _ )* 
@@ -59,7 +62,7 @@ Parameter
 
 Factor
   = "(" _ expr:Math _ ")" {return new Factor(expr);}
-  / CallFunction / Integer / GetVariable
+  / CallFunction / Integer / GetArrayElement / GetVariable
 
 Integer "integer"
   = _ [0-9]+ {return new Integer(text());}
