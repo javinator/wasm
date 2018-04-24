@@ -11,7 +11,7 @@ DefineFunction
   {return new DefineFunction(name,para,exp);}
 
 Expression
-  = _ exp:((If/While/CreateArray/GetArrayElement/Define/Assign/Math) Break)+ _ 
+  = _ exp:((If/While/CreateArray/Define/Assign/Math) Break)+ _ 
   {return new Expression(exp);}
 
 If

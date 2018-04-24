@@ -668,14 +668,11 @@ window.Parser = /*
           if (s4 === peg$FAILED) {
             s4 = peg$parseCreateArray();
             if (s4 === peg$FAILED) {
-              s4 = peg$parseGetArrayElement();
+              s4 = peg$parseDefine();
               if (s4 === peg$FAILED) {
-                s4 = peg$parseDefine();
+                s4 = peg$parseAssign();
                 if (s4 === peg$FAILED) {
-                  s4 = peg$parseAssign();
-                  if (s4 === peg$FAILED) {
-                    s4 = peg$parseMath();
-                  }
+                  s4 = peg$parseMath();
                 }
               }
             }
@@ -704,14 +701,11 @@ window.Parser = /*
               if (s4 === peg$FAILED) {
                 s4 = peg$parseCreateArray();
                 if (s4 === peg$FAILED) {
-                  s4 = peg$parseGetArrayElement();
+                  s4 = peg$parseDefine();
                   if (s4 === peg$FAILED) {
-                    s4 = peg$parseDefine();
+                    s4 = peg$parseAssign();
                     if (s4 === peg$FAILED) {
-                      s4 = peg$parseAssign();
-                      if (s4 === peg$FAILED) {
-                        s4 = peg$parseMath();
-                      }
+                      s4 = peg$parseMath();
                     }
                   }
                 }
