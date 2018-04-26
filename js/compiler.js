@@ -102,7 +102,7 @@ visitCreateArray(node) {
 	return out;
 	}	
 }
-
+  
 visitGetArrayElement(node) {
 	if (memarr.includes(node.data[0])) {
 		var i = memarr.indexOf(node.data[0]);
@@ -114,7 +114,26 @@ visitGetArrayElement(node) {
 		}
 	} else { return "ERROR: Array not yet created"; }
 }
-
+  
+visitSetArrayElement(node) {
+	if (memarr.includes(node.data[0])) {
+		var i = memarr.indexOf(node.data[0]);
+		var off;
+		if (node.children[0].data[0] >= memarr[i+2]) {return "ERROR: Array out of bound";}
+		else {
+			off = (Number(memarr[i+1]) + Number(node.children[0].data[0]))*8;
+			return "(f64.store offset=".concat(off,"(i32.const 0)",node.children[1].accept(),")");
+		}
+    } else { return "ERROR: Array not yet created"; }
+}
+  
+visitArrayLength(node) {
+    if (memarr.includes(node.data[0])) {
+      var i = Number(memarr.indexOf(node.data[0]))
+      return "(f64.const ".concat(memarr[i+2],")");
+    } else {return "ERROR: Array not yet created";}
+}
+  
 visitFactor(node) {
 	return node.children[0].accept();
 }
@@ -135,4 +154,5 @@ window.visit = new Visitor();
     memarr = [];
 	return ast.accept();
 }
+
 

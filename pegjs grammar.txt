@@ -191,6 +191,29 @@ class If extends Node {
 			return visit.visitGetArrayElement(this);
 		}
 	}
+    
+    class SetArrayElement extends Node {
+		constructor(char,index,exp) {
+			super();
+			this.name = "Set Array Element";
+			this.data = [char];
+			this.children = [index,exp];
+		}
+		accept() {
+			return visit.visitSetArrayElement(this);
+		}
+	}
+    
+    class ArrayLength extends Node {
+		constructor(char) {
+			super();
+			this.name = "Array Length";
+			this.data = [char];
+		}
+		accept() {
+			return visit.visitArrayLength(this);
+		}
+	}
 
     	class Integer extends Node {
     		constructor(int) {
@@ -239,7 +262,7 @@ DefineFunction
   {return new DefineFunction(name,para,exp);}
 
 Expression
-  = _ exp:((If/While/CreateArray/Define/Assign/Math) Break)+ _ 
+  = _ exp:((If/While/CreateArray/SetArrayElement/Define/Assign/Math) Break)+ _ 
   {return new Expression(exp);}
 
 If
@@ -260,6 +283,12 @@ CreateArray
 GetArrayElement
   = "get" _ char:Character _ "[" _ ele:(Integer/GetVariable) _ "]" {return new GetArrayElement(char,ele);}
   
+SetArrayElement
+  = "set" _ char:Character _ "[" _ ele:(Integer/GetVariable) _ "]" _ "=" exp:Math {return new SetArrayElement(char,ele,exp);}
+ 
+ArrayLength
+  = "len" _ char:Character {return new ArrayLength(char);}
+
 CallFunction
   = "call" char:Character para:( _ "(" Math ")" _ )* 
   {return new CallFunction(char,para);}
@@ -287,7 +316,7 @@ Parameter
 
 Factor
   = "(" _ expr:Math _ ")" {return new Factor(expr);}
-  / CallFunction / Integer / GetArrayElement / GetVariable
+  / CallFunction / Integer / GetArrayElement / ArrayLength / GetVariable
 
 Integer "integer"
   = _ [0-9]+ {return new Integer(text());}
@@ -303,3 +332,5 @@ Break "break"
 
 _ "whitespace"
   = [ \t\r\n]*
+
+

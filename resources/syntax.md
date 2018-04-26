@@ -34,7 +34,9 @@ Can only be used in control instructions.
 ##### Arrays
 
 * array $ [*elements*] : Creates a global array with name $ and elements separated by whitespaces. Only Numbers and Variables can be added as elements. No return value.
-* get $ [*index*] : Returns the value of array with name $ at *index*.
+* get $ [*index*] : Returns the value of element of array with name $ at *index*.
+* set $ [*index*] = *exp* : Sets the value of element of array with name $ at *index* to the value of *exp*. No return value.
+* len $ : Returns the length of array with name $.
 
 ### Iteration 1
 
@@ -120,9 +122,9 @@ def main {
 var x;
 x = 3;
 array a [1 2 x 4 5];
-get a [2];
+len a + get a [2];
 };
 
 Output:
-3
+8
 ```
