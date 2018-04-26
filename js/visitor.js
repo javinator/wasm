@@ -109,7 +109,7 @@ visitGetArrayElement(node) {
 		var off;
 		if (node.children[0].data[0] >= memarr[i+2]) {return "ERROR: Array out of bound";}
 		else {
-			off = (memarr[i+1] + node.children[0].data[0])*8;
+			off = (Number(memarr[i+1]) + Number(node.children[0].data[0]))*8;
 			return "(f64.load offset=".concat(off,"(i32.const 0))");
 		}
 	} else { return "ERROR: Array not yet created"; }
@@ -127,3 +127,12 @@ visitGetVariable(node) {
 	return "(get_local $".concat(node.data[0],")");
 }
 }
+
+window.visit = new Visitor();
+
+(ast) => {
+    memlen = 0;
+    memarr = [];
+	return ast.accept();
+}
+
