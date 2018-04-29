@@ -7,8 +7,7 @@ var y;
 if (x<1) {
 x=1;
 } else {
-y = x-1;
-x = x*call fac(y);
+x = x*call fac(x-1);
 };
 x;
 };

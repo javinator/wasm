@@ -29,7 +29,14 @@ Can only be used in control instructions.
 #### Control Structures
 
 * if (*bool*) {*exp1*} else {*exp2*}; : Calls expressions *exp1* if *bool* is 1, *exp2* otherwise. No return value.
-* do {*exp*} while (*bool*); : Calls expressions *exp*, then if *bool* is 1, restarts *exp*. No return value. 
+* do {*exp*} while (*bool*); : Calls expressions *exp*, then if *bool* is 1, restarts *exp*. No return value.
+
+##### Arrays
+
+* array $ [*elements*] : Creates a global array with name $ and elements separated by whitespaces. Only Numbers and Variables can be added as elements. No return value.
+* get $ [*index*] : Returns the value of element of array with name $ at *index*.
+* set $ [*index*] = *exp* : Sets the value of element of array with name $ at *index* to the value of *exp*. No return value.
+* len $ : Returns the length of array with name $.
 
 ### Iteration 1
 
@@ -104,3 +111,20 @@ x-1;
 Output:
 299
 ``` 
+
+### Iteration 5
+
+Arrays have been added. Arrays are global structure that can be accessed from everywhere. As of now, an array must be initialized with values. After the creation of an array, the array can't be grown. And there is a rudimentary check of the size, when elements are accessed.
+
+```
+Input:
+def main {
+var x;
+x = 3;
+array a [1 2 x 4 5];
+len a + get a [2];
+};
+
+Output:
+8
+```
