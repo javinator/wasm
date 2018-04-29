@@ -37,11 +37,11 @@ visitExpression(node) {
 }
 
 visitIf(node) {
-	return "(if ".concat(node.children[0].accept(),"\n(then ",node.children[1].accept(),")\n").concat("(else ",node.children[2].accept(),"))");
+	return "(if ".concat(node.children[0].accept(),"\n(then ",node.children[1].accept(),")\n(else ",node.children[2].accept(),"))");
 }
 
 visitWhile(node) {
-	return "(loop\n".concat(node.children[1].accept(),"\n(br_if 0 ",node.children[0].accept(),"))");
+	return "(loop\n".concat(node.children[1].accept(),"(br_if 0 ",node.children[0].accept(),"))");
 }
 
 visitBool(node) {
@@ -73,13 +73,12 @@ visitAssign(node) {
 
 visitMath(node) {
 	if (node.data[0] === "+") {return "(f64.add ".concat(node.children[0].accept(),node.children[1].accept(),")");}
-        if (node.data[0] === "-") {return "(f64.sub ".concat(node.children[0].accept(),node.children[1].accept(),")");}
-	else {return "Error: Wrong operator";}
+    if (node.data[0] === "-") {return "(f64.sub ".concat(node.children[0].accept(),node.children[1].accept(),")");}
 }
 
 visitTerm(node) {
 	if (node.data[0] === "*") {return "(f64.mul ".concat(node.children[0].accept(),node.children[1].accept(),")");}
-        if (node.data[0] === "/") {return "(f64.div ".concat(node.children[0].accept(),node.children[1].accept(),")");}
+    if (node.data[0] === "/") {return "(f64.div ".concat(node.children[0].accept(),node.children[1].accept(),")");}
 }
 
 visitParameter(node) {
@@ -87,7 +86,7 @@ visitParameter(node) {
 }
 
 visitCreateArray(node) {
-	if (memarr.includes(node.data[0])) { console.error("Error: Name",node.data[0],"already in use"); }
+	if (memarr.includes(node.data[0])) { console.error("Error: Name",node.data[0],"already in use"); return "";}
 	else {
 	var out = "";
 	memarr.push(node.data[0]);
@@ -108,12 +107,12 @@ visitGetArrayElement(node) {
 	if (memarr.includes(node.data[0])) {
 		var i = memarr.indexOf(node.data[0]);
 		var off;
-		if (node.children[0].data[0] >= memarr[i+2]) {console.error("Error: Array index out of bound");}
+		if (node.children[0].data[0] >= memarr[i+2]) {console.error("Error: Array index out of bound"); return "";}
 		else {
 			off = (Number(memarr[i+1]) + Number(node.children[0].data[0]))*8;
 			return "(f64.load offset=".concat(off,"(i32.const 0))");
 		}
-	} else { console.error("Error: Array",node.data[0],"not yet created"); }
+	} else { console.error("Error: Array",node.data[0],"not yet created"); return "";}
 }
   
 visitSetArrayElement(node) {
@@ -125,14 +124,14 @@ visitSetArrayElement(node) {
 			off = (Number(memarr[i+1]) + Number(node.children[0].data[0]))*8;
 			return "(f64.store offset=".concat(off,"(i32.const 0)",node.children[1].accept(),")");
 		}
-    } else {console.error("Error: Array not yet created"); }
+    } else {console.error("Error: Array",node.data[0],"not yet created"); return "";}
 }
   
 visitArrayLength(node) {
     if (memarr.includes(node.data[0])) {
       var i = Number(memarr.indexOf(node.data[0]))
       return "(f64.const ".concat(memarr[i+2],")");
-    } else {console.error("Error: Array not yet created");}
+    } else {console.error("Error: Array",node.data[0],"not yet created"); return "";}
 }
   
 visitFactor(node) {
