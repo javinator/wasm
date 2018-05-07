@@ -310,13 +310,13 @@ Term
       return tail.reduce(function(result, element) {
         return new Term(result,element[1],element[3]);
       }, head);}
-    
-Parameter
-  = char:Character {return new Parameter(char);}
 
 Factor
   = "(" _ expr:Math _ ")" {return new Factor(expr);}
   / CallFunction / Integer / GetArrayElement / ArrayLength / GetVariable
+
+Parameter
+  = char:Character {return new Parameter(char);}
 
 Integer "integer"
   = _ [0-9]+ {return new Integer(text());}

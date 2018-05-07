@@ -1,0 +1,10 @@
+class Squareroot extends Node {
+    	constructor(math) {
+        	super();
+            	this.name = "Squareroot";
+            	this.children = [math];
+		}
+    	accept() {
+    		return visit.visitSquareroot(this);
+    	}
+}
