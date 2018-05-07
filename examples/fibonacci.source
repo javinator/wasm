@@ -6,7 +6,7 @@ def fib(x) {
 if (x<=2) {
 x=1;
 } else {
-x = call fib(x-1) + call fib(x-2);
+x = call fib(x-2) + call fib(x-1);
 };
 x;
 };
