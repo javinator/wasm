@@ -1,0 +1,30 @@
+.wat
+
+(module
+  (memory $0 1)
+  (data (i32.const 0) "Test\00")
+  (data (i32.const 256) "Hi\00")
+  (data (i32.const 512) "Hello World and welcome to this test of string functionalities in webassembly\00")
+  (data (i32.const 768) "Hello World\00")
+  (func $addTwo (param i32)(result i32)
+    (i32.mul (get_local 0)(i32.const 256))
+  )
+  (export "memory" (memory $0))
+  (export "addTwo" (func $addTwo))
+)
+
+.js
+
+function utf8ToString(h, p) {
+  let s = "";
+  for (i = p; h[i]; i++) {
+    s += String.fromCharCode(h[i]);
+  }
+  return s;
+}
+
+let m = new WebAssembly.Instance(wasmModule, {});
+let h = new Uint8Array(m.exports.memory.buffer);
+let p = m.exports.addTwo(2);
+
+console.log(utf8ToString(h, p))

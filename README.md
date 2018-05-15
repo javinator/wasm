@@ -61,3 +61,5 @@ https://cdn.rawgit.com/WebAssembly/wabt/fb986fbd/demo/wat2wasm/
 https://mbebenita.github.io/WasmExplorer/
 
 http://ast.run/
+
+https://medium.com/@mbebenita/hello-world-in-webassembly-83951757775
