@@ -1,5 +1,6 @@
 var memlen = 0;
 var memarr = [];
+var stringarr = [];
 
 class Visitor {
 
@@ -10,8 +11,13 @@ visitModule(node) {
 	for (i = 0; i < node.children[1].length; i++) {
   	if (node.children[1][i].length != 0) {out = out.concat(node.children[1][i].accept());}
   }
-  
-	return "(module\n(memory $0 1)\n".concat(out,"(export \"main\" (func $main))\n)");
+  	var strings = "";
+  	var off = 1024;
+  	for (i=0; i < stringarr.length; i++) {
+		strings =  strings.concat("(data (i32.const ".concat(off,")",stringarr[i]),")\n");
+		off = off + 256;
+	}
+	return "(module\n(memory $0 1)\n".concat(out,"(export \"main\" (func $main))\n(export \"memory\" (memory $0))\n)");
 }
 
 visitDefineMain(node) {
@@ -132,6 +138,12 @@ visitArrayLength(node) {
       var i = Number(memarr.indexOf(node.data[0]))
       return "(f64.const ".concat(memarr[i+2],")");
     } else {console.error("Error: Array",node.data[0],"not yet created"); return "";}
+}
+  
+visitString(node) {
+  	var off = 1024 + 256 * stringarr.length;
+  	stringarr.push(node.children[0]);
+  	return "(f64.const ".concat(off,")");
 }
   
 visitFactor(node) {

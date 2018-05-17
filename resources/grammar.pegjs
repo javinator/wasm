@@ -214,6 +214,18 @@ class If extends Node {
 			return visit.visitArrayLength(this);
 		}
 	}
+    
+    class String extends Node {
+		constructor(char,string) {
+			super();
+			this.name = "String";
+			this.data = [char];
+            this.children = [string];
+		}
+		accept() {
+			return visit.visitString(this);
+		}
+	}
 
     	class Integer extends Node {
     		constructor(int) {
@@ -262,7 +274,7 @@ DefineFunction
   {return new DefineFunction(name,para,exp);}
 
 Expression
-  = _ exp:((If/While/CreateArray/SetArrayElement/Define/Assign/Math) Break)+ _ 
+  = _ exp:((If/While/String/CreateArray/SetArrayElement/Define/Assign/Math) Break)+ _ 
   {return new Expression(exp);}
 
 If
@@ -288,6 +300,9 @@ SetArrayElement
  
 ArrayLength
   = "len" _ char:Character {return new ArrayLength(char);}
+  
+String
+  = "string" _ char:Character _ "'" _ string:Character _ "'" {return new String(char,string);}
 
 CallFunction
   = "call" char:Character para:( _ "(" Math ")" _ )* 
