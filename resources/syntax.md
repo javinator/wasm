@@ -38,6 +38,11 @@ Can only be used in control instructions.
 * set $ [*index*] = *exp* : Sets the value of element of array with name $ at *index* to the value of *exp*. No return value.
 * len $ : Returns the length of array with name $.
 
+##### String
+
+* string $ "*string*" : Creates a global string with name $ and value *string*. No return value.
+* get string $ : Returns the string with name $.
+
 ### Iteration 1
 
 Simple arithmetics can now be compiled to Webassembly, e.g.
@@ -127,4 +132,19 @@ len a + get a [2];
 
 Output:
 8
+```
+
+### Iteration 6
+
+Strings have been added. Strings are global structures like arrays and are saved in the memory.
+
+```
+Input:
+def main {
+string hi "Hello world";
+get string hi;
+};
+
+Output:
+Hello world
 ```

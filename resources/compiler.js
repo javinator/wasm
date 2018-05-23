@@ -1,6 +1,18 @@
 var memlen = 0;
 var memarr = [];
 var stringarr = [];
+var stringmem = [];
+
+function addStrings(out) {
+	var strings = "";
+  	var off = 1024;
+  	for (var i=0; i < stringmem.length; i++) {
+		strings =  strings.concat("(data (i32.const ".concat(off,") \"",stringmem[i]),"\" )\n");
+		off = off + 256;
+	}
+	
+	return "(module\n(memory $0 1)\n".concat(strings, out,"(export \"main\" (func $main))\n(export \"memory\" (memory $0))\n)");
+}
 
 class Visitor {
 
@@ -9,15 +21,9 @@ visitModule(node) {
 	var i;
 	out = out.concat(node.children[0].accept());
 	for (i = 0; i < node.children[1].length; i++) {
-  	if (node.children[1][i].length != 0) {out = out.concat(node.children[1][i].accept());}
+  	if (node.children[1][i].length !== 0) {out = out.concat(node.children[1][i].accept());}
   }
-  	var strings = "";
-  	var off = 1024;
-  	for (i=0; i < stringarr.length; i++) {
-		strings =  strings.concat("(data (i32.const ".concat(off,")",stringarr[i]),")\n");
-		off = off + 256;
-	}
-	return "(module\n(memory $0 1)\n".concat(out,"(export \"main\" (func $main))\n(export \"memory\" (memory $0))\n)");
+  	return addStrings(out);
 }
 
 visitDefineMain(node) {
@@ -70,7 +76,7 @@ visitCallFunction(node) {
 
 visitDefine(node) {
 	if (memarr.includes(node.data[0])) { console.error("Error: Name",node.data[0],"already in use"); }
-	else { return "(local $".concat(node.data[0]).concat(" f64)"); };
+	else { return "(local $".concat(node.data[0]).concat(" f64)"); }
 }
 
 visitAssign(node) {
@@ -135,15 +141,23 @@ visitSetArrayElement(node) {
   
 visitArrayLength(node) {
     if (memarr.includes(node.data[0])) {
-      var i = Number(memarr.indexOf(node.data[0]))
+      var i = Number(memarr.indexOf(node.data[0]));
       return "(f64.const ".concat(memarr[i+2],")");
     } else {console.error("Error: Array",node.data[0],"not yet created"); return "";}
 }
   
-visitString(node) {
+visitCreateString(node) {
   	var off = 1024 + 256 * stringarr.length;
-  	stringarr.push(node.children[0]);
-  	return "(f64.const ".concat(off,")");
+  	stringarr.push(node.data[0], off);
+	stringmem.push(node.children[0]);
+	return "";
+}
+
+visitGetString(node) {
+  	if (stringarr.includes(node.data[0])) {
+		var off = 1024 + stringarr.indexOf(node.data[0])*128;
+			return "(f64.const ".concat(off,")");
+	} else { console.error("Error: String",node.data[0],"not yet created"); return "";}
 }
   
 visitFactor(node) {
@@ -166,5 +180,3 @@ window.visit = new Visitor();
     memarr = [];
 	return ast.accept();
 }
-
-

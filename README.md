@@ -22,7 +22,7 @@ This will open a download prompt for a 'index.wat' file. After this step you nee
 wat2wasm index.wat -o index.wasm
 ```
 
-After that, you can reload the 'index.html' and the result should be displayed.
+After that, you can press the Button 'Display result' and the result should be displayed.
 
 For the syntax see [Syntax](resources/syntax.md)
 

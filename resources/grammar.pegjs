@@ -215,15 +215,26 @@ class If extends Node {
 		}
 	}
     
-    class String extends Node {
+    class CreateString extends Node {
 		constructor(char,string) {
 			super();
-			this.name = "String";
-			this.data = [char];
+			this.name = "Create String";
+            this.data = [char];
             this.children = [string];
 		}
 		accept() {
-			return visit.visitString(this);
+			return visit.visitCreateString(this);
+		}
+	}
+    
+    class GetString extends Node {
+		constructor(char) {
+			super();
+			this.name = "Get String";
+            this.data = [char];
+		}
+		accept() {
+			return visit.visitGetString(this);
 		}
 	}
 
@@ -274,7 +285,7 @@ DefineFunction
   {return new DefineFunction(name,para,exp);}
 
 Expression
-  = _ exp:((If/While/String/CreateArray/SetArrayElement/Define/Assign/Math) Break)+ _ 
+  = _ exp:((If/While/CreateString/GetString/CreateArray/SetArrayElement/Define/Assign/Math) Break)+ _ 
   {return new Expression(exp);}
 
 If
@@ -301,8 +312,11 @@ SetArrayElement
 ArrayLength
   = "len" _ char:Character {return new ArrayLength(char);}
   
-String
-  = "string" _ char:Character _ "'" _ string:Character _ "'" {return new String(char,string);}
+CreateString
+  = "string" _ char:Character _ "\"" _ string:(Character _)+ _ "\"" {return new CreateString(char, string.join("").replace(/,/g,""));}
+  
+GetString 
+  = "get string" _ char:Character {return new GetString(char);}
 
 CallFunction
   = "call" char:Character para:( _ "(" Math ")" _ )* 
