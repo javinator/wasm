@@ -46,6 +46,10 @@ Everything is done with f64 as of now, but compare operators (like *less than*) 
 
 Adding secondary step (AST before outputting as .wat) took longer than expected. Didn't really know what I was doing in the beginning, but seems to work now.
 
+Arrays are added through storage in main memory. Kind of a hack, as they are global arrays (would be better to scope them, but I don't see how I could achieve that in WebAssembly, as arrays are not natively supported).
+
+Strings are even more of a hack. They are also stored in the main memory as *data*. They have a minimal offset of 1024 and a maximum length of 256. This means, that arrays can only have 128 elements altogether. We could augment the minimal offset of strings to allow more arrays.
+
 ### Resources
 
 https://pegjs.org/online
