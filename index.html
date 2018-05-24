@@ -4,18 +4,19 @@
 <title>JS Parser and Wasm Player</title>
 <meta charset="UTF-8">
 <script src="resources/compiler.js"></script>
-<script src="resources/parser.js"></script> 
+<script src="resources/parser.js"></script>
 <script>
 function write(input) {
     memlen = 0;
     memarr = [];
+    stringarr = [];
+    stringmem = [];
+    stringflag = 0;
     var root = Parser.parse(input);
-    console.log(memarr);
-    console.log(root);
     var textToWrite = visit.visitModule(root);
     var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
     var fileNameToSaveAs = "index.wat";
-      var downloadLink = document.createElement("a");
+    var downloadLink = document.createElement("a");
     downloadLink.download = fileNameToSaveAs;
     downloadLink.innerHTML = "Download File";
     if (window.webkitURL != null)
@@ -51,7 +52,7 @@ call fac(6);
 };
  
 def fac(x) {
-if (x<1) {
+if (x&lt;1) {
 x=1;
 } else {
 x = x*call fac(x-1);
@@ -64,7 +65,20 @@ x;
 </td><td width="50%">
 The result of the loaded Webassembly function is:<br>
 <p id="result"></p>
+<form action="javascript:updateResult()">
+  <input type="submit" value="Display result" style="margin: 10px;">
+  </form>
+</tr></td></table>
 <script>
+function utf8ToString(h, p) {
+  let s = "";
+  for (i = p; h[i]; i++) {
+    s += String.fromCharCode(h[i]);
+  }
+  return s;
+}
+
+function updateResult() {
 var importObject = {
   imports: { imported_func: arg => console.log(arg) }
 };
@@ -74,9 +88,16 @@ fetch('index.wasm').then(response =>
 ).then(bytes =>
   WebAssembly.instantiate(bytes, importObject)
 ).then(obj => {
-  // Call an exported function:
-  document.getElementById("result").innerHTML = obj.instance.exports.main();
+  	// Call an exported function:
+  	let h = new Uint8Array(obj.instance.exports.memory.buffer);
+	let p = obj.instance.exports.main();
+	if (stringflag > 0) {
+		document.getElementById("result").innerHTML = utf8ToString(h, p);
+	}
+	else { document.getElementById("result").innerHTML = p;
+	}
 })
+}
 </script>
 </body>
 </html>
