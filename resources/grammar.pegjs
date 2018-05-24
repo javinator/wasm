@@ -227,6 +227,18 @@ class If extends Node {
 		}
 	}
     
+    class ConcatString extends Node {
+		constructor(char,strings) {
+			super();
+			this.name = "Concat String";
+            this.data = [char];
+            this.children = [strings];
+		}
+		accept() {
+			return visit.visitConcatString(this);
+		}
+	}
+    
     class GetString extends Node {
 		constructor(char) {
 			super();
@@ -285,7 +297,7 @@ DefineFunction
   {return new DefineFunction(name,para,exp);}
 
 Expression
-  = _ exp:((If/While/CreateString/GetString/CreateArray/SetArrayElement/Define/Assign/Math) Break)+ _ 
+  = _ exp:((If/While/CreateString/GetString/ConcatString/CreateArray/SetArrayElement/Define/Assign/Math) Break)+ _ 
   {return new Expression(exp);}
 
 If
@@ -317,6 +329,9 @@ CreateString
   
 GetString 
   = "get string" _ char:Character {return new GetString(char);}
+  
+ConcatString
+  = "concat" _ char:Character _ "[" _ strings:(Character)+ _ "]" {return new ConcatString(char, strings);}
 
 CallFunction
   = "call" char:Character para:( _ "(" Math ")" _ )* 
@@ -354,7 +369,7 @@ GetVariable
   = char:Character {return new GetVariable(char);}
   
 Character "character"
-  = _[a-zA-Z]+ {return text().replace(" ","");}
+  = _[a-zA-Z._!]+ {return text().replace(" ","");}
 
 Break "break"
   = [;]_ {return;}

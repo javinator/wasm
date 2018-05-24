@@ -6,15 +6,13 @@
 <script src="resources/compiler.js"></script>
 <script src="resources/parser.js"></script>
 <script>
-var stringflag = 0;
 function write(input) {
     memlen = 0;
     memarr = [];
-	stringarr = [];
-	stringmem = [];
+    stringarr = [];
+    stringmem = [];
+    stringflag = 0;
     var root = Parser.parse(input);
-    console.log(memarr);
-    console.log(root);
     var textToWrite = visit.visitModule(root);
     var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
     var fileNameToSaveAs = "index.wat";
@@ -40,8 +38,6 @@ function write(input) {
     console.log("The above has been written to file 'index.wat'");
 
     downloadLink.click();
-	
-	stringflag = stringarr.length;
 }
 </script>
 </head>

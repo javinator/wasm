@@ -42,6 +42,7 @@ Can only be used in control instructions.
 
 * string $ "*string*" : Creates a global string with name $ and value *string*. No return value.
 * get string $ : Returns the string with name $.
+* concat $ [*strings*] : Create a new string with name $ as concatenation of strings with names *strings* separated by whitespace. No return value.
 
 ### Iteration 1
 

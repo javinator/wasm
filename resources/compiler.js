@@ -2,6 +2,7 @@ var memlen = 0;
 var memarr = [];
 var stringarr = [];
 var stringmem = [];
+var stringflag = 0;
 
 function addStrings(out) {
 	var strings = "";
@@ -147,17 +148,40 @@ visitArrayLength(node) {
 }
   
 visitCreateString(node) {
+	if (stringarr.includes(node.data[0])) { console.error("Error: Name",node.data[0],"already in use"); return "";}
+	else {
   	var off = 1024 + 256 * stringarr.length;
   	stringarr.push(node.data[0], off);
 	stringmem.push(node.children[0]);
 	return "";
+	}
 }
 
 visitGetString(node) {
   	if (stringarr.includes(node.data[0])) {
 		var off = 1024 + stringarr.indexOf(node.data[0])*128;
-			return "(f64.const ".concat(off,")");
+		stringflag = 1;
+		return "(f64.const ".concat(off,")");
 	} else { console.error("Error: String",node.data[0],"not yet created"); return "";}
+}
+
+visitConcatString(node) {
+	if (stringarr.includes(node.data[0])) { 
+		console.error("Error: Name",node.data[0],"already in use"); 
+		return "";}
+	else {
+		var conc = "";
+		for (var i=0; i < node.children[0].length; i++) {
+			if (stringarr.includes(node.children[0][i])) {
+				var index = stringarr.indexOf(node.children[0][i])/2;
+				conc = conc.concat(stringmem[index]," ");
+				var off = 1024 + index*256;
+			} else { console.error("Error: String",node.children[0][i],"not yet created"); return "";}
+		}
+		stringarr.push(node.data[0], off);
+		stringmem.push(conc);
+		return "";
+	}
 }
   
 visitFactor(node) {
