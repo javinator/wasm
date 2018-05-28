@@ -42,7 +42,6 @@ Can only be used in control instructions.
 
 * string $ "*string*" : Creates a global string with name $ and value *string*. No return value. They can have a maximum length of 256 characters.
 * get string $ : Returns the string with name $.
-* concat $ [*strings*] : Create a new string with name $ as concatenation of strings with names *strings* separated by whitespace. No return value. The maximum length of 256 also applies to the final concatenated string.
 
 ### Iteration 1
 
