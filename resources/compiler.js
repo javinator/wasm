@@ -1,8 +1,7 @@
-var memlen = 0;
+var memlen = 1;
 var memarr = [];
 var stringarr = [];
 var stringmem = [];
-var stringflag = 0;
 
 function addStrings(out) {
 	var strings = "";
@@ -12,7 +11,7 @@ function addStrings(out) {
 		off = off + 256;
 	}
 	
-	return "(module\n(memory $0 1)\n".concat(strings, out,"(export \"main\" (func $main))\n(export \"memory\" (memory $0))\n)");
+	return "(module\n(memory $0 1)\n".concat(strings, out,"(func $isString (result i32)\n(i32.load (i32.const 0)))\n(export \"isString\" (func $isString))\n(export \"main\" (func $main))\n(export \"memory\" (memory $0))\n)");
 }
 
 class Visitor {
@@ -109,7 +108,7 @@ visitCreateArray(node) {
 	var off;
 	for (i=0; i < node.children.length; i++) {
 		off = memlen*8;
-		out =  out.concat("(f64.store offset=".concat(off," (i32.const 0)",node.children[i].accept()),")\n");
+		out =  out.concat("(f64.store ".concat("(i32.const ",off,")",node.children[i].accept()),")\n");
 		memlen = memlen + 1;
 	}
 	return out;
@@ -123,7 +122,7 @@ visitGetArrayElement(node) {
 		if (node.children[0].data[0] >= memarr[i+2]) {console.error("Error: Array index out of bound"); return "";}
 		else {
 			off = (Number(memarr[i+1]) + Number(node.children[0].data[0]))*8;
-			return "(f64.load offset=".concat(off,"(i32.const 0))");
+			return "(f64.load ".concat("(i32.const ",off,"))");
 		}
 	} else { console.error("Error: Array",node.data[0],"not yet created"); return "";}
 }
@@ -135,7 +134,7 @@ visitSetArrayElement(node) {
 		if (node.children[0].data[0] >= memarr[i+2]) {console.error("Error: Array index out of bound");}
 		else {
 			off = (Number(memarr[i+1]) + Number(node.children[0].data[0]))*8;
-			return "(f64.store offset=".concat(off,"(i32.const 0)",node.children[1].accept(),")");
+			return "(f64.store ".concat("(i32.const ",off,")",node.children[1].accept(),")");
 		}
     } else {console.error("Error: Array",node.data[0],"not yet created"); return "";}
 }
@@ -160,12 +159,12 @@ visitCreateString(node) {
 visitGetString(node) {
   	if (stringarr.includes(node.data[0])) {
 		var off = 1024 + stringarr.indexOf(node.data[0])*128;
-		stringflag = 1;
-		return "(f64.const ".concat(off,")");
+		return "(i32.store (i32.const 0)(i32.const 1))\n(f64.const ".concat(off,")");
 	} else { console.error("Error: String",node.data[0],"not yet created"); return "";}
 }
 
 visitConcatString(node) {
+	var off;
 	if (stringarr.includes(node.data[0])) { 
 		console.error("Error: Name",node.data[0],"already in use"); 
 		return "";}
@@ -175,7 +174,7 @@ visitConcatString(node) {
 			if (stringarr.includes(node.children[0][i])) {
 				var index = stringarr.indexOf(node.children[0][i])/2;
 				conc = conc.concat(stringmem[index]," ");
-				var off = 1024 + index*256;
+				off = 1024 + index*256;
 			} else { console.error("Error: String",node.children[0][i],"not yet created"); return "";}
 		}
 		stringarr.push(node.data[0], off);

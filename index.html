@@ -7,11 +7,10 @@
 <script src="resources/parser.js"></script>
 <script>
 function write(input) {
-    memlen = 0;
+    memlen = 1;
     memarr = [];
     stringarr = [];
     stringmem = [];
-    stringflag = 0;
     var root = Parser.parse(input);
     var textToWrite = visit.visitModule(root);
     var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
@@ -68,7 +67,7 @@ The result of the loaded Webassembly function is:<br>
 <form action="javascript:updateResult()">
   <input type="submit" value="Display result" style="margin: 10px;">
   </form>
-</tr></td></table>
+</td></tr></table>
 <script>
 function utf8ToString(h, p) {
   let s = "";
@@ -79,6 +78,7 @@ function utf8ToString(h, p) {
 }
 
 function updateResult() {
+console.log("Result to be updated");
 var importObject = {
   imports: { imported_func: arg => console.log(arg) }
 };
@@ -91,7 +91,8 @@ fetch('index.wasm').then(response =>
   	// Call an exported function:
   	let h = new Uint8Array(obj.instance.exports.memory.buffer);
 	let p = obj.instance.exports.main();
-	if (stringflag > 0) {
+	let f = obj.instance.exports.isString();
+	if (f == 1) {
 		document.getElementById("result").innerHTML = utf8ToString(h, p);
 	}
 	else { document.getElementById("result").innerHTML = p;
