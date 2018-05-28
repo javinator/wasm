@@ -7,10 +7,9 @@
 <script src="resources/parser.js"></script>
 <script>
 function write(input) {
-    memlen = 4;
+    memlen = 8;
     memarr = [];
     stringarr = [];
-    stringmem = [];
     var root = Parser.parse(input);
     var textToWrite = visit.visitModule(root);
     var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
@@ -32,9 +31,8 @@ function write(input) {
         downloadLink.style.display = "none";
         document.body.appendChild(downloadLink);
     }
-    
-    console.log(textToWrite);
-    console.log("The above has been written to file 'index.wat'");
+
+    console.log("The program has been written to file 'index.wat'");
 
     downloadLink.click();
 }
