@@ -32,9 +32,11 @@ For the syntax see [Syntax](resources/syntax.md)
 
 #### Memory
 
-Up to now the memory allocation looks like this. Now I'm trying to store all variables with types into the memory.
+Here is a draft for an example of the new memory usage.
 
-![AST](resources/memory.png)
+![AST](resources/memory-new.png)
+
+First four bytes are reserved for the string flag and the memory length. Then variables have a fixed length of 12 bytes: 4 bytes for the type and 8 bytes for the value. Arrays have a length of at least 16 bytes: 4 bytes for the type, 4 bytes for the length and at least one value with 8 bytes.
 
 ## Project Idea
 
