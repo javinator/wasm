@@ -366,7 +366,7 @@ GetVariable
   = char:Character {return new GetVariable(char);}
   
 Character "character"
-  = _[a-zA-Z._!]+ {return text().replace(" ","");}
+  = _[a-zA-Z]+[0-9._!?'-]* {return text().replace(" ","");}
 
 Break "break"
   = [;]_ {return;}
