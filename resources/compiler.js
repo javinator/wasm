@@ -1,18 +1,6 @@
-var memlen = 1;
+var memlen = 4;
 var memarr = [];
 var stringarr = [];
-var stringmem = [];
-
-function addStrings(out) {
-	var strings = "";
-  	var off = 1024;
-  	for (var i=0; i < stringmem.length; i++) {
-		strings =  strings.concat("(data (i32.const ".concat(off,") \"",stringmem[i]),"\" )\n");
-		off = off + 256;
-	}
-	
-	return "(module\n(memory $0 1)\n".concat(strings, out,"(func $isString (result i32)\n(i32.load (i32.const 0)))\n(export \"isString\" (func $isString))\n(export \"main\" (func $main))\n(export \"memory\" (memory $0))\n)");
-}
 
 class Visitor {
 
@@ -23,7 +11,7 @@ visitModule(node) {
 	for (i = 0; i < node.children[1].length; i++) {
   	if (node.children[1][i].length !== 0) {out = out.concat(node.children[1][i].accept());}
   }
-  	return addStrings(out);
+  	return "(module\n(memory $0 1)\n".concat(out,"(func $isString (result i32)\n(i32.load (i32.const 0)))\n(export \"isString\" (func $isString))\n(export \"main\" (func $main))\n(export \"memory\" (memory $0))\n)");
 }
 
 visitDefineMain(node) {
@@ -107,9 +95,9 @@ visitCreateArray(node) {
 	var i;
 	var off;
 	for (i=0; i < node.children.length; i++) {
-		off = memlen*8;
+		off = memlen;
 		out =  out.concat("(f64.store ".concat("(i32.const ",off,")",node.children[i].accept()),")\n");
-		memlen = memlen + 1;
+		memlen = memlen + 8;
 	}
 	return out;
 	}	
@@ -149,21 +137,28 @@ visitArrayLength(node) {
 visitCreateString(node) {
 	if (stringarr.includes(node.data[0])) { console.error("Error: Name",node.data[0],"already in use"); return "";}
 	else {
-  	var off = 1024 + 256 * stringarr.length;
-  	stringarr.push(node.data[0], off);
-	stringmem.push(node.children[0]);
-	return "";
+	var out = "";
+  	stringarr.push(node.data[0], memlen);
+	for (var i = 0; i < node.children[0].length; i++)
+	{
+		var code = node.children[0].charCodeAt(i);
+		out = out.concat("(i32.store16 (i32.const ",memlen,")(i32.const ",code,"))\n");
+		memlen = memlen + 2;
+	}
+	out = out.concat("(i32.store16 (i32.const ",memlen,")(i32.const 0))\n");
+	memlen = memlen + 2;
+	return out;
 	}
 }
 
 visitGetString(node) {
   	if (stringarr.includes(node.data[0])) {
-		var off = 1024 + stringarr.indexOf(node.data[0])*128;
-		return "(i32.store (i32.const 0)(i32.const 1))\n(f64.const ".concat(off,")");
+		var index = stringarr.indexOf(node.data[0]);
+		return "(i32.store (i32.const 0)(i32.const 1))\n(f64.const ".concat(stringarr[index+1],")");
 	} else { console.error("Error: String",node.data[0],"not yet created"); return "";}
 }
 
-visitConcatString(node) {
+/*visitConcatString(node) {
 	var off;
 	if (stringarr.includes(node.data[0])) { 
 		console.error("Error: Name",node.data[0],"already in use"); 
@@ -182,7 +177,7 @@ visitConcatString(node) {
 		return "";
 	}
 }
-  
+ */ 
 visitFactor(node) {
 	return node.children[0].accept();
 }
@@ -199,7 +194,7 @@ visitGetVariable(node) {
 window.visit = new Visitor();
 
 (ast) => {
-    memlen = 0;
+    memlen = 4;
     memarr = [];
 	return ast.accept();
 }

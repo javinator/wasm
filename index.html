@@ -7,7 +7,7 @@
 <script src="resources/parser.js"></script>
 <script>
 function write(input) {
-    memlen = 1;
+    memlen = 4;
     memarr = [];
     stringarr = [];
     stringmem = [];
@@ -71,7 +71,7 @@ The result of the loaded Webassembly function is:<br>
 <script>
 function utf8ToString(h, p) {
   let s = "";
-  for (i = p; h[i]; i++) {
+  for (i = p; h[i]; i = i+2) {
     s += String.fromCharCode(h[i]);
   }
   return s;
