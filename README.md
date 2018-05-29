@@ -32,9 +32,13 @@ For the syntax see [Syntax](resources/syntax.md)
 
 #### Memory
 
-Up to now the memory allocation looks like this. Now I'm trying to store all variables with types into the memory.
+Here is a draft for an example of the new memory usage.
 
-![AST](resources/memory.png)
+![AST](resources/memory-new.png)
+
+First four bytes are reserved for the string flag and the memory length. Then variables have a fixed length of 12 bytes: 4 bytes for the type and 8 bytes for the value. Arrays have a length of at least 16 bytes: 4 bytes for the type, 4 bytes for the length and at least one value with 8 bytes.
+Strings are like arrays, only the values in there are utf-16 code for the Characters. Minimum Size for a string is 12 bytes: 4 bytes for the type, 4 bytes for the length, 2 bytes for a character, and 2 bytes for the null character.
+In the compiler memory, arrays and strings (variables will follow) are now written as quadrupels {name, type, start offset, length}.
 
 ## Project Idea
 

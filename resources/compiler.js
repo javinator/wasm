@@ -1,18 +1,6 @@
-var memlen = 1;
+var memlen = 8;
 var memarr = [];
-var stringarr = [];
-var stringmem = [];
-
-function addStrings(out) {
-	var strings = "";
-  	var off = 1024;
-  	for (var i=0; i < stringmem.length; i++) {
-		strings =  strings.concat("(data (i32.const ".concat(off,") \"",stringmem[i]),"\" )\n");
-		off = off + 256;
-	}
-	
-	return "(module\n(memory $0 1)\n".concat(strings, out,"(func $isString (result i32)\n(i32.load (i32.const 0)))\n(export \"isString\" (func $isString))\n(export \"main\" (func $main))\n(export \"memory\" (memory $0))\n)");
-}
+/*elements in memarr are stored as quadrupels: name, type, start offset and length*/
 
 class Visitor {
 
@@ -23,7 +11,7 @@ visitModule(node) {
 	for (i = 0; i < node.children[1].length; i++) {
   	if (node.children[1][i].length !== 0) {out = out.concat(node.children[1][i].accept());}
   }
-  	return addStrings(out);
+  	return "(module\n(memory $0 1)\n".concat(out,"(func $isString (result i32)\n(i32.load (i32.const 0)))\n(export \"isString\" (func $isString))\n(export \"main\" (func $main))\n(export \"memory\" (memory $0))\n)");
 }
 
 visitDefineMain(node) {
@@ -102,14 +90,15 @@ visitCreateArray(node) {
 	else {
 	var out = "";
 	memarr.push(node.data[0]);
+	memarr.push(1);
 	memarr.push(memlen);
 	memarr.push(node.children.length);
 	var i;
 	var off;
 	for (i=0; i < node.children.length; i++) {
-		off = memlen*8;
+		off = memlen;
 		out =  out.concat("(f64.store ".concat("(i32.const ",off,")",node.children[i].accept()),")\n");
-		memlen = memlen + 1;
+		memlen = memlen + 8;
 	}
 	return out;
 	}	
@@ -119,51 +108,65 @@ visitGetArrayElement(node) {
 	if (memarr.includes(node.data[0])) {
 		var i = memarr.indexOf(node.data[0]);
 		var off;
-		if (node.children[0].data[0] >= memarr[i+2]) {console.error("Error: Array index out of bound"); return "";}
+		if (memarr[i+1]!==1) {console.error("Error: Not an array"); return "ERROR";}
+		if (node.children[0].data[0] >= memarr[i+2]) {console.error("Error: Array index out of bound"); return "ERROR";}
 		else {
 			off = (Number(memarr[i+1]) + Number(node.children[0].data[0]))*8;
 			return "(f64.load ".concat("(i32.const ",off,"))");
 		}
-	} else { console.error("Error: Array",node.data[0],"not yet created"); return "";}
+	} else { console.error("Error: Array",node.data[0],"not yet created"); return "ERROR";}
 }
   
 visitSetArrayElement(node) {
 	if (memarr.includes(node.data[0])) {
 		var i = memarr.indexOf(node.data[0]);
 		var off;
+		if (memarr[i+1]!==1) {console.error("Error: Not an array"); return "ERROR";}
 		if (node.children[0].data[0] >= memarr[i+2]) {console.error("Error: Array index out of bound");}
 		else {
 			off = (Number(memarr[i+1]) + Number(node.children[0].data[0]))*8;
 			return "(f64.store ".concat("(i32.const ",off,")",node.children[1].accept(),")");
 		}
-    } else {console.error("Error: Array",node.data[0],"not yet created"); return "";}
+    } else {console.error("Error: Array",node.data[0],"not yet created"); return "ERROR";}
 }
   
 visitArrayLength(node) {
     if (memarr.includes(node.data[0])) {
-      var i = Number(memarr.indexOf(node.data[0]));
-      return "(f64.const ".concat(memarr[i+2],")");
-    } else {console.error("Error: Array",node.data[0],"not yet created"); return "";}
+		if (memarr[i+1]!==1) {console.error("Error: Not an array"); return "ERROR";}
+    	var i = Number(memarr.indexOf(node.data[0]));
+    	return "(f64.const ".concat(memarr[i+2],")");
+    } else {console.error("Error: Array",node.data[0],"not yet created"); return "ERROR";}
 }
   
 visitCreateString(node) {
-	if (stringarr.includes(node.data[0])) { console.error("Error: Name",node.data[0],"already in use"); return "";}
+	if (memarr.includes(node.data[0])) { console.error("Error: Name",node.data[0],"already in use"); return "ERROR";}
 	else {
-  	var off = 1024 + 256 * stringarr.length;
-  	stringarr.push(node.data[0], off);
-	stringmem.push(node.children[0]);
-	return "";
+	var out = "";
+  	memarr.push(node.data[0]);
+	memarr.push(2);
+	memarr.push(memlen);
+	memarr.push(node.children[0].length);
+	for (var i = 0; i < node.children[0].length; i++)
+	{
+		var code = node.children[0].charCodeAt(i);
+		out = out.concat("(i32.store16 (i32.const ",memlen,")(i32.const ",code,"))\n");
+		memlen = memlen + 2;
+	}
+	out = out.concat("(i32.store16 (i32.const ",memlen,")(i32.const 0))\n");
+	memlen = memlen + 2;
+	return out;
 	}
 }
 
 visitGetString(node) {
-  	if (stringarr.includes(node.data[0])) {
-		var off = 1024 + stringarr.indexOf(node.data[0])*128;
-		return "(i32.store (i32.const 0)(i32.const 1))\n(f64.const ".concat(off,")");
-	} else { console.error("Error: String",node.data[0],"not yet created"); return "";}
+  	if (memarr.includes(node.data[0])) {
+		var index = memarr.indexOf(node.data[0]);
+		if (memarr[index+1]!==2) {console.error("Error: Not a string"); return "ERROR";}
+		return "(i32.store (i32.const 0)(i32.const 1))\n(f64.const ".concat(memarr[index+2],")");
+	} else { console.error("Error: String",node.data[0],"not yet created"); return "ERROR";}
 }
 
-visitConcatString(node) {
+/*visitConcatString(node) {
 	var off;
 	if (stringarr.includes(node.data[0])) { 
 		console.error("Error: Name",node.data[0],"already in use"); 
@@ -182,7 +185,7 @@ visitConcatString(node) {
 		return "";
 	}
 }
-  
+ */ 
 visitFactor(node) {
 	return node.children[0].accept();
 }
@@ -199,7 +202,7 @@ visitGetVariable(node) {
 window.visit = new Visitor();
 
 (ast) => {
-    memlen = 0;
+    memlen = 8;
     memarr = [];
 	return ast.accept();
 }

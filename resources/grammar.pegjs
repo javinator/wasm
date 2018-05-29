@@ -297,7 +297,7 @@ DefineFunction
   {return new DefineFunction(name,para,exp);}
 
 Expression
-  = _ exp:((If/While/CreateString/GetString/ConcatString/CreateArray/SetArrayElement/Define/Assign/Math) Break)+ _ 
+  = _ exp:((If/While/CreateString/GetString/CreateArray/SetArrayElement/Define/Assign/Math) Break)+ _ 
   {return new Expression(exp);}
 
 If
@@ -329,9 +329,6 @@ CreateString
   
 GetString 
   = "get string" _ char:Character {return new GetString(char);}
-  
-ConcatString
-  = "concat" _ char:Character _ "[" _ strings:(Character)+ _ "]" {return new ConcatString(char, strings);}
 
 CallFunction
   = "call" char:Character para:( _ "(" Math ")" _ )* 
@@ -369,7 +366,7 @@ GetVariable
   = char:Character {return new GetVariable(char);}
   
 Character "character"
-  = _[a-zA-Z._!]+ {return text().replace(" ","");}
+  = _[a-zA-Z]+[0-9._!?'-]* {return text().replace(" ","");}
 
 Break "break"
   = [;]_ {return;}
